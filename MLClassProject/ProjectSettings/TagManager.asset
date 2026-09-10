@@ -5,6 +5,41 @@ TagManager:
   serializedVersion: 3
   tags:
   - Boss
+  - agent
+  - iWall
+  - wall
+  - pit
+  - frozenAgent
+  - ball
+  - blueGoal
+  - blueAgent
+  - goal
+  - ground
+  - block
+  - switchOff
+  - pyramid
+  - switchOn
+  - stone
+  - target
+  - badFood
+  - food
+  - walkableSurface
+  - symbol_X
+  - symbol_O
+  - symbol_X_Goal
+  - symbol_O_Goal
+  - purpleAgent
+  - purpleGoal
+  - tile
+  - key
+  - lock
+  - dragon
+  - portal
+  - plus
+  - ex
+  - blockSmall
+  - blockLarge
+  - blockVeryLarge
   layers:
   - Default
   - TransparentFX
@@ -16,7 +51,7 @@ TagManager:
   - Boss
   - PlayerHitbox
   - BossHitbox
-  - 
+  - invisible
   - 
   - 
   - 
