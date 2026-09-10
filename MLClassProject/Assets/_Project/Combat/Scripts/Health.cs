@@ -7,7 +7,8 @@ namespace BossFight.Combat
     /// <summary>
     /// Hit points for a body. Put it on the body root.
     /// Raises <see cref="FightEvents.OnHit"/> on every landed hit and <see cref="FightEvents.OnDeath"/> once.
-    /// Bodies call <see cref="GrantInvulnerability"/> at the start of a roll to open an i-frame window.
+    /// Bodies call <see cref="GrantInvulnerability"/> at the start of a roll to open an i-frame window,
+    /// and raise <see cref="IncomingDamageMultiplier"/> while they are exposed (the boss's stun after its super attack).
     /// </summary>
     public class Health : MonoBehaviour, IDamageable
     {
@@ -22,6 +23,9 @@ namespace BossFight.Combat
         public float Normalized => Pool.Normalized;
         public bool IsDead => Pool.IsDead;
         public bool IsInvulnerable => Time.time < invulnerableUntil;
+
+        /// <summary>Scales every hit that lands. 1 is normal. <see cref="ResetToFull"/> puts it back to 1.</summary>
+        public float IncomingDamageMultiplier { get; set; } = 1f;
 
         /// <summary>A hit landed on this body.</summary>
         public event Action<DamageInfo> Damaged;
@@ -38,6 +42,7 @@ namespace BossFight.Combat
         {
             Pool.Refill();
             invulnerableUntil = -1f;
+            IncomingDamageMultiplier = 1f;
         }
 
         public void TakeDamage(DamageInfo info)
@@ -49,11 +54,12 @@ namespace BossFight.Combat
                 return;
             }
 
-            bool died = Pool.Damage(info.Amount);
-            if (info.Amount <= 0f) return;
+            var applied = new DamageInfo(info.Amount * IncomingDamageMultiplier, info.Source);
+            bool died = Pool.Damage(applied.Amount);
+            if (applied.Amount <= 0f) return;
 
-            Damaged?.Invoke(info);
-            FightEvents.RaiseHit(info.Source, gameObject, info);
+            Damaged?.Invoke(applied);
+            FightEvents.RaiseHit(applied.Source, gameObject, applied);
 
             if (died)
             {

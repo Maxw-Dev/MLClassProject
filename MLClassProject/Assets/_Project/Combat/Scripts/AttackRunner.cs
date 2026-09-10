@@ -54,6 +54,15 @@ namespace BossFight.Combat
             return timeline.Start(data);
         }
 
+        /// <summary>Runs the timeline without arming any hitbox, for moves that bring their own damage (a projectile spawned on Active).</summary>
+        public bool TryStartUnarmed(AttackData data)
+        {
+            if (!CanStart(data)) return false;
+            activeHitbox = null;
+            if (stamina != null) stamina.TrySpend(data.StaminaCost);
+            return timeline.Start(data);
+        }
+
         /// <summary>Stops the current attack immediately (stagger, death, episode reset). Fires PhaseChanged(Idle) and Finished(interrupted: true).</summary>
         public void Interrupt() => timeline.Interrupt();
 

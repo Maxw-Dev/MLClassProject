@@ -26,17 +26,21 @@ runner.CanStart(heavyAttack);            // ask first if you need to
 runner.Phase;                            // Idle, Windup, Active, Recovery
 runner.CurrentAttack; runner.TimeInPhase;
 runner.Interrupt();                      // stagger, death, episode reset
+runner.TryStartUnarmed(rangedShot);      // timeline only, no hitbox: the move spawns its own damage (see Boss's projectile)
 
 runner.PhaseChanged += (attack, phase) => { };   // Windup, Active, Recovery, then Idle when it ends
 runner.Finished += (attack, interrupted) => { }; // interrupted is true when cut short
 
 health.GrantInvulnerability(0.4f);       // call at the start of a roll
+health.IncomingDamageMultiplier = 2f;    // while exposed (the boss's stun); ResetToFull puts it back to 1
 health.Damaged += info => { };           // a hit landed
 health.Dodged += info => { };            // a hit was ignored by i-frames
 health.Died += () => { };
 health.IsDead; health.Normalized;        // for HUD and observations
 
 stamina.TrySpend(cost); stamina.Normalized;
+
+hitbox.Hit += (victim, info) => { };     // this hitbox reached someone (they may still have i-framed it)
 ```
 
 **Episode reset** (arena / fight manager): `runner.Interrupt(); health.ResetToFull(); stamina.ResetToFull();`
