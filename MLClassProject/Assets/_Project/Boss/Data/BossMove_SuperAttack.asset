@@ -15,7 +15,7 @@ MonoBehaviour:
   DisplayName: Super Attack
   WindupSeconds: 2
   ActiveSeconds: 0.2
-  RecoverySeconds: 0.6
+  RecoverySeconds: 0.8
   Damage: 45
   StaminaCost: 0
   Range: 7.5
@@ -23,7 +23,7 @@ MonoBehaviour:
   CooldownSeconds: 12
   HitOffset: {x: 0, y: 1, z: 3.5}
   HitRadius: 4
-  StunSeconds: 3
+  WindupHitStunSeconds: 3
   StunDamageMultiplier: 2
   ProjectilePrefab: {fileID: 0}
   ProjectileSpeed: 12

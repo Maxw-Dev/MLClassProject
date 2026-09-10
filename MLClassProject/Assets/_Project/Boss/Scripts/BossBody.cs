@@ -10,8 +10,9 @@ namespace BossFight.Boss
     /// The boss body. Whoever drives it (the RL agent, or a debug driver in the sandbox) asks <see cref="CanPerform"/>
     /// and calls <see cref="TryPerform"/> with a <see cref="BossMove"/>. The body never cares who asked.
     /// Locomotion moves stick until another move replaces them; None stops. Attacks run through Combat's
-    /// <see cref="AttackRunner"/> and lock the body until recovery ends. A move with a stun (the super) then leaves the
-    /// boss stunned and taking extra damage. Everything ticks in FixedUpdate, so it behaves the same at training time scale.
+    /// <see cref="AttackRunner"/> and lock the body until recovery ends. A hit during the windup of a move that allows it
+    /// (the super) interrupts the move and leaves the boss stunned and taking extra damage.
+    /// Everything ticks in FixedUpdate, so it behaves the same at training time scale.
     /// </summary>
     [RequireComponent(typeof(CharacterController), typeof(AttackRunner), typeof(Health))]
     public class BossBody : MonoBehaviour
@@ -74,6 +75,7 @@ namespace BossFight.Boss
             BuildMoveSet();
             runner.PhaseChanged += OnPhaseChanged;
             runner.Finished += OnFinished;
+            health.Damaged += OnDamaged;
             health.Died += OnDied;
         }
 
@@ -198,9 +200,21 @@ namespace BossFight.Boss
         {
             var data = current;
             current = null;
-            if (data == null || moveSet.State != BossState.Attacking) return;   // death or reset already settled the state
-            moveSet.EndAttack(interrupted ? 0f : data.StunSeconds);
-            if (moveSet.State == BossState.Stunned) health.IncomingDamageMultiplier = data.StunDamageMultiplier;
+            if (data == null || moveSet.State != BossState.Attacking) return;   // death, reset or stun already settled the state
+            moveSet.EndAttack();
+            StateChanged?.Invoke(State);
+        }
+
+        /// <summary>A hit landed. During an interruptible windup that means the move is lost and the boss is stunned.</summary>
+        void OnDamaged(DamageInfo info)
+        {
+            var data = current;
+            if (data == null || moveSet.State != BossState.Attacking || runner.Phase != AttackPhase.Windup) return;
+            if (data.WindupHitStunSeconds <= 0f) return;
+
+            runner.Interrupt();                       // OnFinished ends the attack and starts its cooldown
+            moveSet.Stun(data.WindupHitStunSeconds);
+            health.IncomingDamageMultiplier = data.StunDamageMultiplier;
             StateChanged?.Invoke(State);
         }
 

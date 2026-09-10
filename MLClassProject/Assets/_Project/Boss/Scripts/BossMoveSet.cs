@@ -62,21 +62,22 @@ namespace BossFight.Boss
             State = BossState.Idle;
         }
 
-        /// <summary>The attack ended. Its cooldown starts now; a stun follows when <paramref name="stunSeconds"/> is above 0.</summary>
-        public void EndAttack(float stunSeconds)
+        /// <summary>The attack ended, finished or interrupted. Its cooldown starts now.</summary>
+        public void EndAttack()
         {
             if (State != BossState.Attacking) return;
             if (cooldownSeconds.TryGetValue(CurrentAttack, out var cooldown)) readyAt[CurrentAttack] = now + cooldown;
             CurrentAttack = BossMove.None;
-            if (stunSeconds > 0f)
-            {
-                State = BossState.Stunned;
-                StunRemaining = stunSeconds;
-            }
-            else
-            {
-                State = BossState.Idle;
-            }
+            State = BossState.Idle;
+        }
+
+        /// <summary>Knocked out of whatever it was doing (a hit during an interruptible windup). Helpless for <paramref name="seconds"/>.</summary>
+        public void Stun(float seconds)
+        {
+            if (State == BossState.Dead || seconds <= 0f) return;
+            CurrentAttack = BossMove.None;
+            State = BossState.Stunned;
+            StunRemaining = seconds;
         }
 
         public void Tick(float deltaTime)

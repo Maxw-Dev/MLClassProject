@@ -23,7 +23,7 @@ MonoBehaviour:
   CooldownSeconds: 4
   HitOffset: {x: 0, y: 0, z: 0}
   HitRadius: 0.5
-  StunSeconds: 0
+  WindupHitStunSeconds: 0
   StunDamageMultiplier: 2
   ProjectilePrefab: {fileID: 760183836862041052, guid: 13b96240e7ad24b1b9da006138828127, type: 3}
   ProjectileSpeed: 12

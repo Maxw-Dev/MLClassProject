@@ -11,7 +11,7 @@ namespace BossFight.Boss.Tests
 {
     /// <summary>
     /// A boss built in code hits a dummy on the Player layer with each attack, at time scale 1 and 20.
-    /// Covers body → runner → hitbox or projectile → hurtbox → health, and the stun after the super.
+    /// Covers body → runner → hitbox or projectile → hurtbox → health, and the stun when the super's windup is hit.
     /// </summary>
     public class BossBodyTests
     {
@@ -28,7 +28,7 @@ namespace BossFight.Boss.Tests
         }
 
         BossMoveData Move(BossMove move, float windup, float active, float recovery, float damage, Vector3 offset, float radius,
-            float cooldown, float stun = 0f, BossProjectile projectile = null)
+            float cooldown, float windupHitStun = 0f, BossProjectile projectile = null)
         {
             var d = ScriptableObject.CreateInstance<BossMoveData>();
             d.name = move.ToString();
@@ -37,7 +37,7 @@ namespace BossFight.Boss.Tests
             d.WindupSeconds = windup; d.ActiveSeconds = active; d.RecoverySeconds = recovery;
             d.Damage = damage; d.StaminaCost = 0f;
             d.HitOffset = offset; d.HitRadius = radius;
-            d.CooldownSeconds = cooldown; d.StunSeconds = stun; d.StunDamageMultiplier = 2f;
+            d.CooldownSeconds = cooldown; d.WindupHitStunSeconds = windupHitStun; d.StunDamageMultiplier = 2f;
             d.ProjectilePrefab = projectile; d.ProjectileSpeed = 12f; d.ProjectileRange = 20f;
             cleanup.Add(d);
             return d;
@@ -104,7 +104,7 @@ namespace BossFight.Boss.Tests
         {
             Move(BossMove.QuickAttack, 0.3f, 0.1f, 0.4f, 8f, new Vector3(0f, 1f, 1.2f), 0.8f, 0.5f),
             Move(BossMove.HeavySlam, 1.1f, 0.1f, 0.9f, 25f, new Vector3(0f, 1f, 2f), 2f, 3f),
-            Move(BossMove.SuperAttack, 2f, 0.2f, 0.6f, 45f, new Vector3(0f, 1f, 3.5f), 4f, 12f, stun: 3f),
+            Move(BossMove.SuperAttack, 2f, 0.2f, 0.8f, 45f, new Vector3(0f, 1f, 3.5f), 4f, 12f, windupHitStun: 3f),
             Move(BossMove.RangedShot, 0.6f, 0.1f, 0.5f, 12f, Vector3.zero, 0.5f, 4f, projectile: projectile),
             Move(BossMove.AoeBurst, 0.7f, 0.1f, 1f, 15f, new Vector3(0f, 1f, 0f), 4f, 8f),
         };
@@ -171,11 +171,11 @@ namespace BossFight.Boss.Tests
         }
 
         [UnityTest]
-        public IEnumerator SuperLeavesTheBossStunnedAndTakingDoubleDamageThenRecovers()
+        public IEnumerator SuperFinishesNormallyWhenTheWindupIsNotHit()
         {
             Ground();
             var dummy = Dummy(new Vector3(0f, 1f, 2f));
-            var super = Move(BossMove.SuperAttack, 0.2f, 0.1f, 0.1f, 45f, new Vector3(0f, 1f, 3.5f), 4f, 12f, stun: 1f);
+            var super = Move(BossMove.SuperAttack, 0.2f, 0.1f, 0.1f, 45f, new Vector3(0f, 1f, 3.5f), 4f, 12f, windupHitStun: 1f);
             var boss = Boss(Vector3.zero, dummy.transform, super);
             var health = boss.GetComponent<Health>();
 
@@ -183,18 +183,82 @@ namespace BossFight.Boss.Tests
             Assert.IsTrue(boss.TryPerform(BossMove.SuperAttack));
             yield return new WaitForSeconds(super.TotalSeconds + 0.1f);
 
-            Assert.AreEqual(BossState.Stunned, boss.State);
-            Assert.IsFalse(boss.CanPerform(BossMove.Advance), "no moving while stunned");
-            Assert.IsTrue(boss.CanPerform(BossMove.None));
-            health.TakeDamage(new DamageInfo(10f, dummy));
-            Assert.AreEqual(health.Max - 20f, health.Current, 0.001f, "double damage while stunned");
-
-            yield return new WaitForSeconds(1.2f);
-            Assert.AreEqual(BossState.Idle, boss.State);
+            Assert.AreEqual(BossState.Idle, boss.State, "no stun unless the windup was hit");
             Assert.IsTrue(boss.CanPerform(BossMove.Advance));
             Assert.IsFalse(boss.CanPerform(BossMove.SuperAttack), "super is on cooldown after use");
             health.TakeDamage(new DamageInfo(10f, dummy));
-            Assert.AreEqual(health.Max - 30f, health.Current, 0.001f, "normal damage again");
+            Assert.AreEqual(health.Max - 10f, health.Current, 0.001f, "normal damage taken");
+        }
+
+        [UnityTest]
+        public IEnumerator AHitDuringTheSuperWindupStunsTheBossAndDoublesDamageTakenThenRecovers()
+        {
+            Ground();
+            var dummy = Dummy(new Vector3(0f, 1f, 2f));
+            var super = Move(BossMove.SuperAttack, 0.6f, 0.1f, 0.1f, 45f, new Vector3(0f, 1f, 3.5f), 4f, 12f, windupHitStun: 1f);
+            var boss = Boss(Vector3.zero, dummy.transform, super);
+            var health = boss.GetComponent<Health>();
+            int dummyHits = 0;
+            Action<GameObject, GameObject, DamageInfo> onHit = (_, victim, __) => { if (victim == dummy) dummyHits++; };
+            FightEvents.OnHit += onHit;
+            try
+            {
+                yield return new WaitForFixedUpdate();
+                Assert.IsTrue(boss.TryPerform(BossMove.SuperAttack));
+                yield return new WaitForSeconds(0.1f);
+                Assert.AreEqual(AttackPhase.Windup, boss.Phase);
+
+                health.TakeDamage(new DamageInfo(10f, dummy));   // the player punishes the windup
+
+                Assert.AreEqual(BossState.Stunned, boss.State);
+                Assert.AreEqual(AttackPhase.Idle, boss.Phase, "the super was interrupted");
+                Assert.AreEqual(health.Max - 10f, health.Current, 0.001f, "the punishing hit itself is normal damage");
+                Assert.IsFalse(boss.CanPerform(BossMove.Advance), "no moving while stunned");
+                Assert.IsTrue(boss.CanPerform(BossMove.None));
+                health.TakeDamage(new DamageInfo(10f, dummy));
+                Assert.AreEqual(health.Max - 30f, health.Current, 0.001f, "double damage while stunned");
+
+                yield return new WaitForSeconds(1.2f);
+                Assert.AreEqual(BossState.Idle, boss.State);
+                Assert.AreEqual(0, dummyHits, "the interrupted super never landed");
+                Assert.IsTrue(boss.CanPerform(BossMove.Advance));
+                Assert.IsFalse(boss.CanPerform(BossMove.SuperAttack), "an interrupted super still goes on cooldown");
+                health.TakeDamage(new DamageInfo(10f, dummy));
+                Assert.AreEqual(health.Max - 40f, health.Current, 0.001f, "normal damage again");
+            }
+            finally
+            {
+                FightEvents.OnHit -= onHit;
+            }
+        }
+
+        [UnityTest]
+        public IEnumerator AHitDuringAnOrdinaryWindupDoesNotInterruptIt()
+        {
+            Ground();
+            var dummy = Dummy(new Vector3(0f, 1f, 2f));
+            var quick = Move(BossMove.QuickAttack, 0.4f, 0.1f, 0.2f, 8f, new Vector3(0f, 1f, 1.2f), 0.8f, 0.5f);
+            var boss = Boss(Vector3.zero, dummy.transform, quick);
+            var health = boss.GetComponent<Health>();
+            int dummyHits = 0;
+            Action<GameObject, GameObject, DamageInfo> onHit = (_, victim, __) => { if (victim == dummy) dummyHits++; };
+            FightEvents.OnHit += onHit;
+            try
+            {
+                yield return new WaitForFixedUpdate();
+                Assert.IsTrue(boss.TryPerform(BossMove.QuickAttack));
+                yield return new WaitForSeconds(0.1f);
+                health.TakeDamage(new DamageInfo(10f, dummy));
+                Assert.AreEqual(BossState.Attacking, boss.State, "only moves with a windup stun can be interrupted");
+
+                yield return new WaitForSeconds(quick.TotalSeconds + 0.5f);
+                Assert.AreEqual(1, dummyHits, "the quick attack still landed");
+                Assert.AreEqual(BossState.Idle, boss.State);
+            }
+            finally
+            {
+                FightEvents.OnHit -= onHit;
+            }
         }
 
         [UnityTest]

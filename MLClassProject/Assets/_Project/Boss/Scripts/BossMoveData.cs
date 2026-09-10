@@ -5,7 +5,7 @@ namespace BossFight.Boss
 {
     /// <summary>
     /// Everything about one boss attack: the timing and damage (it is an <see cref="AttackData"/>, which Combat runs),
-    /// plus the cooldown, the hit shape, the stun it leaves the boss in, and the projectile if it fires one.
+    /// plus the cooldown, the hit shape, whether a hit during its windup stuns the boss, and the projectile if it fires one.
     /// One asset per attack in <c>Boss/Data</c>. Tune here, not in code.
     /// </summary>
     [CreateAssetMenu(menuName = "BossFight/Boss Move", fileName = "BossMove_")]
@@ -23,9 +23,9 @@ namespace BossFight.Boss
         public Vector3 HitOffset = new Vector3(0f, 1f, 1.5f);
         [Min(0.01f)] public float HitRadius = 1f;
 
-        [Header("Stun afterwards")]
-        [Tooltip("Seconds the boss stands helpless after this move. 0 for none.")]
-        [Min(0f)] public float StunSeconds = 0f;
+        [Header("Punish window")]
+        [Tooltip("If the boss is hit during this move's windup, the move is interrupted and the boss is stunned for this long. 0 means the windup cannot be interrupted.")]
+        [Min(0f)] public float WindupHitStunSeconds = 0f;
         [Tooltip("Damage taken is multiplied by this while stunned.")]
         [Min(1f)] public float StunDamageMultiplier = 2f;
 

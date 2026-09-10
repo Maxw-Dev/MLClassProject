@@ -50,7 +50,7 @@ namespace BossFight.Boss.Tests
             var set = Set();
             set.BeginAttack(BossMove.HeavySlam);
             set.Tick(5f);                       // however long the attack took
-            set.EndAttack(0f);
+            set.EndAttack();
 
             Assert.AreEqual(BossState.Idle, set.State);
             Assert.IsFalse(set.CanPerform(BossMove.HeavySlam));
@@ -67,9 +67,19 @@ namespace BossFight.Boss.Tests
         {
             var set = Set();
             set.BeginAttack(BossMove.QuickAttack);
-            set.EndAttack(0f);
+            set.EndAttack();
             Assert.IsFalse(set.CanPerform(BossMove.QuickAttack));
             Assert.IsTrue(set.CanPerform(BossMove.HeavySlam));
+        }
+
+        [Test]
+        public void FinishingAnAttackNeverStunsByItself()
+        {
+            var set = Set();
+            set.BeginAttack(BossMove.SuperAttack);
+            set.EndAttack();
+            Assert.AreEqual(BossState.Idle, set.State);
+            Assert.AreEqual(0f, set.StunRemaining);
         }
 
         [Test]
@@ -77,7 +87,8 @@ namespace BossFight.Boss.Tests
         {
             var set = Set();
             set.BeginAttack(BossMove.SuperAttack);
-            set.EndAttack(3f);
+            set.EndAttack();                    // the windup was interrupted by a hit
+            set.Stun(3f);
 
             Assert.AreEqual(BossState.Stunned, set.State);
             Assert.AreEqual(3f, set.StunRemaining);
@@ -119,7 +130,8 @@ namespace BossFight.Boss.Tests
         {
             var set = Set();
             set.BeginAttack(BossMove.SuperAttack);
-            set.EndAttack(3f);
+            set.EndAttack();
+            set.Stun(3f);
             set.Reset();
             Assert.AreEqual(BossState.Idle, set.State);
             Assert.AreEqual(0f, set.CooldownRemaining(BossMove.SuperAttack));

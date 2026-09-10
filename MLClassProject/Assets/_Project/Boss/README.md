@@ -32,12 +32,17 @@ runs the timing) plus cooldown, hit shape, stun, and projectile settings. First-
 |---|---|---|---|---|---|---|---|
 | QuickAttack | 0.3 | 0.1 | 0.4 | 0.5 | sphere r0.8, 1.2 m ahead | 8 | staying in and swinging |
 | HeavySlam | 1.1 | 0.1 | 0.9 | 3 | sphere r2, 2 m ahead | 25 | rolling too early |
-| SuperAttack | 2.0 | 0.2 | 0.6, then 3 s stun at 2x damage taken | 12 | sphere r4, 3.5 m ahead | 45 | hanging back |
+| SuperAttack | 2.0 | 0.2 | 0.8 | 12 | sphere r4, 3.5 m ahead | 45 | hanging back |
 | RangedShot | 0.6 | projectile | 0.5 | 4 | r0.5, 12 m/s, 20 m | 12 | standing far, not strafing |
 | AoeBurst | 0.7 | 0.1 | 1.0 | 8 | sphere r4 on the boss | 15 | dodging too often |
 
 Cooldowns count from the end of the move. The boss turns toward the player at full speed while idle, slowly during a
 windup, and not at all from Active until the move ends.
+
+**The punish window:** a hit that lands during the super's windup interrupts it and leaves the boss stunned for 3 s,
+taking double damage (`WindupHitStunSeconds` and `StunDamageMultiplier` on the move asset; 0 on every other move, so
+their windups cannot be interrupted). An interrupted super still goes on cooldown. Land nothing during the windup and
+the super just finishes with its normal recovery.
 
 ## What is on the prefab
 
@@ -54,11 +59,14 @@ straight and disappears on the first hit or at range.
 `Scenes/Boss_Sandbox.unity`: the boss with T7's `PlayerInput` + `UserInput` and a `BossIntentDriver`, a dummy on the Player
 layer, and a `FightEventLogger` printing hits. Keys: stick or WASD toward the dummy is Advance, away is Retreat, sideways
 strafes. J or left click is Quick, K or right click is Slam, 1 is Super, 2 is Ranged, 3 is AoE. Hold a key to repeat.
+Key 4 makes the dummy swing (Combat's light attack, reach about 1.5 m in front of it): walk the boss into the dummy,
+start the super with 1, tap 4 during the windup, and watch the stun.
 
 ## Tests
 
 Window → General → Test Runner. Edit Mode: `BossMoveSetTests` (state and cooldown rules). Play Mode: `BossBodyTests`
-builds a boss in code and checks every attack lands exactly once at time scale 1 and 20, the stun after the super, and
-that Advance stops short of the target.
+builds a boss in code and checks every attack lands exactly once at time scale 1 and 20, that the super finishes
+normally unless its windup is hit, the stun when it is, that ordinary windups cannot be interrupted, and that Advance
+stops short of the target.
 
-Not yet: animations, stagger when hit, head tracking. `AttackRunner.Interrupt()` is the hook for stagger.
+Not yet: animations, a general stagger on every hit, head tracking. The windup interrupt above is the only stagger for now.
