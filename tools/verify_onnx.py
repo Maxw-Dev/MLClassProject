@@ -7,11 +7,6 @@ import numpy as np
 import onnxruntime as ort
 
 #T8 - "loads an exported .onnx, feeds it a recorded observation, and checks if Unity and Python agree"
-import argparse
-import sys
-import numpy as np
-import onnxruntime as ort
-
 def verify_onnx_parity(model_path: str, tolerance: float = 1e-4):
     print(f"Loading ONNX model: {model_path}")
     
