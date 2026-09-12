@@ -98,6 +98,21 @@ Then press Play in the Unity Editor. Training output lands in `results/` (git-ig
 
 If you prefer an activated shell instead of `uv run`: `source .venv/bin/activate` (macOS/Linux) or `.venv\Scripts\activate` (Windows).
 
+### TensorBoard Instructions
+
+TensorBoard allows you to monitor training metrics (such as cumulative reward, episode length, and policy entropy) in real time.
+
+Run this from the repo root, pointing to your results/ directory:
+```
+uv run tensorboard --logdir results
+```
+Or, to inspect a specific training run, point directly to its run ID folder:
+```
+uv run tensorboard --logdir results/<run_id>
+```
+Once running, open your browser and navigate to: `http://localhost:6006`
+
+
 ### Rules
 
 - Do not `pip install` into the venv by hand. To add or change a dependency, edit `pyproject.toml`, run `uv lock`, and commit the updated `uv.lock`.
