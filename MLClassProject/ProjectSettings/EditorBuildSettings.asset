@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/_Project/Agent/Scenes/Agent_Smoke.unity
+    guid: 03f455a386c454c808e8d4358f1f6dc0
+  - enabled: 0
     path: Assets/_Project/Arena/Scenes/Arena.unity
     guid: 6670e880784c74d99b65b47995657c05
   m_configObjects:
