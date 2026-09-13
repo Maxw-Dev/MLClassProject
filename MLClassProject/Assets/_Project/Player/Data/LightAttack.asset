@@ -17,5 +17,5 @@ MonoBehaviour:
   ActiveSeconds: 0.5
   RecoverySeconds: 0.15
   Damage: 7
-  StaminaCost: 15
+  StaminaCost: 12.5
   Range: 2
