@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using BossFight.Combat;
 using BossFight.Core;
 using UnityEngine;
 
@@ -10,6 +11,8 @@ namespace BossFight.Player
     public class PlayerBody : MonoBehaviour
     {
         private Animator m_animator;
+        private AttackRunner m_runner;
+        private Health health;
 
         #region Player Params
 
@@ -41,10 +44,12 @@ namespace BossFight.Player
         [Header("Light Attack")]
         // TODO: add damage or otherwise
         [SerializeField] private float m_lightAttackDuration = .5f;
+        [SerializeField] private AttackData m_lightAttack;
 
         [Header("Heavy Attack")]
         // TODO: add damage or otherwise
         [SerializeField] private float m_heavyAttackDuration = 1.5f;
+        [SerializeField] private AttackData m_heavyAttack;
 
         #endregion
 
@@ -52,6 +57,7 @@ namespace BossFight.Player
         /// Gets references to components
         /// </summary>
         void Start() {
+            m_runner = GetComponent<AttackRunner>();
             m_intentSource = GetComponent<IIntentSource>();
             m_animator = GetComponent<Animator>();
         }
@@ -189,6 +195,9 @@ namespace BossFight.Player
 
             m_animator.SetTrigger("Roll");
 
+            // Trigger invulnerability
+            health.GrantInvulnerability(m_rollDuration);
+
             // move the player accordingly
             while (m_cooldownTimer > 0f) {
                 float t = m_cooldownTimer / m_rollDuration; // inverted 
@@ -204,6 +213,11 @@ namespace BossFight.Player
         /// initiates an action cooldown
         /// </summary>
         private void LightAttack() {
+            // try to start the attack. If fails then exit
+            if (!m_runner.TryStart(m_lightAttack)) {
+                return;
+            }
+
             m_cooldownTimer = m_lightAttackDuration;
             m_animator.SetTrigger("Light");
 
@@ -215,8 +229,52 @@ namespace BossFight.Player
         /// initiates an action cooldown
         /// </summary>
         private void HeavyAttack() {
+            // try to start the attack. If fails then exit
+            if (!m_runner.TryStart(m_heavyAttack)) {
+                return;
+            }
+
             m_cooldownTimer = m_heavyAttackDuration;
             m_animator.SetTrigger("Heavy");
+        }
+
+        #endregion
+        #region Combat
+
+        void OnEnable() {
+            health = GetComponent<Health>();
+            health.Damaged += OnDamaged;
+            health.Died += OnDeath;
+        }
+
+        void OnDisable() {
+            health.Damaged -= OnDamaged;
+            health.Died -= OnDeath;
+        }
+
+        void OnDamaged(DamageInfo info) {
+            // stop any existing coroutines and start a new one
+            StopAllCoroutines();
+            StartCoroutine(DamageSequence());
+        }
+
+        IEnumerator DamageSequence() {
+
+            // Temporary damaged effect
+            transform.Rotate(Vector3.one * 45f);
+
+            yield return new WaitForSeconds(.5f); // to be used in a more sophisitcaed fashion later
+
+            // Reset rotation automatically
+
+        }
+
+        void OnDeath() {
+            // stop any existing coroutines and start a new one
+            StopAllCoroutines();
+            
+            // Temporary death effect
+            Destroy(gameObject);
         }
 
         #endregion

@@ -13,7 +13,12 @@ GameObject:
   - component: {fileID: 1528901363171336803}
   - component: {fileID: 7551833424294181401}
   - component: {fileID: 274585365036550650}
-  m_Layer: 0
+  - component: {fileID: 9206822179568122582}
+  - component: {fileID: 7256304746702626110}
+  - component: {fileID: 4815775500284042138}
+  - component: {fileID: 1081349475679593737}
+  - component: {fileID: 7703223948351433254}
+  m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33,6 +38,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1704745353133312257}
   - {fileID: 1445496288815264857}
   - {fileID: 4637832806341748379}
   m_Father: {fileID: 0}
@@ -55,7 +61,9 @@ MonoBehaviour:
   m_rollDistance: 5
   m_rollDuration: 0.8
   m_lightAttackDuration: 0.75
+  m_lightAttack: {fileID: 11400000, guid: b39b9b6dafa995b42a51df6e11550e29, type: 2}
   m_heavyAttackDuration: 1.5
+  m_heavyAttack: {fileID: 11400000, guid: 587536c27e2ce554d9fffd3cdbb29640, type: 2}
   m_inputBuffer: 0.1
 --- !u!114 &1528901363171336803
 MonoBehaviour:
@@ -121,6 +129,83 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &9206822179568122582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009a616be6f3c4ee1896a9081f903024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Health
+  max: 100
+--- !u!114 &7256304746702626110
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90af631bac86e4674b597162c262e618, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Stamina
+  max: 100
+  regenPerSecond: 20
+  regenDelay: 1
+--- !u!136 &4815775500284042138
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1081349475679593737
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 891a0bf8867e34664ace44354ce68f49, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Hurtbox
+--- !u!114 &7703223948351433254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1340b77c63e1a4c108a4b396c843af8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.AttackRunner
+  defaultHitbox: {fileID: 3436667381511922935}
+  stamina: {fileID: 7256304746702626110}
 --- !u!1 &712191641135662219
 GameObject:
   m_ObjectHideFlags: 0
@@ -382,6 +467,52 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!1 &4477124034507995092
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1704745353133312257}
+  - component: {fileID: 3436667381511922935}
+  m_Layer: 8
+  m_Name: Hitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1704745353133312257
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4477124034507995092}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3765468294292571635}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3436667381511922935
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4477124034507995092}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41b77518f7ed649d18dc3594e39b137f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Hitbox
+  offset: {x: 0, y: 0, z: 1.5}
+  radius: 1
 --- !u!1 &4508291967797930392
 GameObject:
   m_ObjectHideFlags: 0
