@@ -1,264 +1,213 @@
-using UnityEngine;
-using BossFight.Core;
-using BossFight.Combat;
 using System;
 using System.Collections;
-// TextMeshPro import does not work for some reason
+using BossFight.Combat;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace BossFight.Arena
 {
+    /// <summary>
+    /// Runs one arena's fight loop: puts both fighters on their spawn points at full health, runs the round clock,
+    /// calls the result (a death, or a draw when time runs out), raises <see cref="FightEnded"/>, then restarts
+    /// after a delay. One per arena, listening only to its own two fighters, so many arenas can run side by side
+    /// for training. The clock and the restart delay tick in FixedUpdate, so rounds are the same length at any
+    /// time scale. Every UI reference is optional: leave them empty on training arenas.
+    /// </summary>
     public class FightManager : MonoBehaviour
     {
-        
-        // This manager manages the arena fight. 
-
-        // Sets the Fighters of the arena
         [Header("Fighters")]
         [SerializeField] private GameObject fighter1;
         [SerializeField] private GameObject fighter2;
 
-        // Sets the spawnpoints of the fighters
         [Header("Spawn Points")]
         [SerializeField] private Transform spawnPoint1;
         [SerializeField] private Transform spawnPoint2;
 
-        // UI
-        [Header("Fight Start UI")]
+        [Header("Round Settings")]
+        [Tooltip("Seconds a round lasts before it is called a draw.")]
+        [SerializeField, Min(1f)] private float roundTime = 60f;
+        [Tooltip("Seconds between a result and the next round.")]
+        [SerializeField, Min(0f)] private float resetDelay = 5f;
+        [Tooltip("Start the next round by itself. Turn off when something else, like the agent, calls StartNewFight.")]
+        [SerializeField] private bool autoRestart = true;
+
+        [Header("UI (optional)")]
         [SerializeField] private Text fightStartText;
         [SerializeField] private float fightStartTextDuration = 1.5f;
-
-        [Header("Win Annoucement UI")]
         [SerializeField] private Text winText;
         [SerializeField] private float winTextDuration = 2f;
-
-        [Header("Timer UI")]
-        [SerializeField] private Text timerText;
-
-         [Header("Tie Annoucement UI")]
         [SerializeField] private Text timesUpText;
         [SerializeField] private float timesUpTextDuration = 2f;
-        
-        [Header("Round Number UI")]
+        [SerializeField] private Text timerText;
         [SerializeField] private Text roundText;
-
-        // Score Board
-        [Header("Scoreboard")]
         [SerializeField] private Text score1Text;
         [SerializeField] private Text score2Text;
 
-        [Header("Round Setting")]
-        // Time limit of each round
-        [SerializeField] public float roundTime = 60f;
-        // Time delay between each round
-        [SerializeField] public float resetDelay = 5f;
+        public bool IsFightActive { get; private set; }
+        public float TimeRemaining { get; private set; }
+        public int CurrentRound { get; private set; }
+        public int Score1 { get; private set; }
+        public int Score2 { get; private set; }
+        public bool AutoRestart { get => autoRestart; set => autoRestart = value; }
 
+        /// <summary>The round is over. The winner, or null when time ran out.</summary>
+        public event Action<GameObject> FightEnded;
 
-        // The state of is there a fight going on now
-        public bool isFightActive = false;
+        Health health1, health2;
+        bool restartPending;
+        float restartIn;    // seconds until the next round once a result is in
 
-        // The remaining time of the fight
-        public float timeRemaining = 60f;
+        void Awake()
+        {
+            health1 = RequireHealth(fighter1);
+            health2 = RequireHealth(fighter2);
+            if (health1 == null || health2 == null) enabled = false;
+        }
 
-        // Current round 
-        public int currentRound = 0;
-
-        // Scores
-        public int score1 = 0;
-        public int score2 = 0;
-
-        // Fight ended event 
-        // Sends the winner
-        public static event Action<GameObject> OnFightEnded;
-
+        Health RequireHealth(GameObject fighter)
+        {
+            var health = fighter != null ? fighter.GetComponent<Health>() : null;
+            if (health == null) Debug.LogError($"{name}: both fighters need a Health component on their root.", this);
+            return health;
+        }
 
         void OnEnable()
         {
-            // Subcribe for the death event to call HandleDeath
-            FightEvents.OnDeath += HandleDeath;
-        }
-        void onDisable()
-        {
-            // Unsubcribe from the death event 
-            FightEvents.OnDeath -= HandleDeath;
+            if (health1 != null) health1.Died += OnFighter1Died;
+            if (health2 != null) health2.Died += OnFighter2Died;
         }
 
+        void OnDisable()
+        {
+            if (health1 != null) health1.Died -= OnFighter1Died;
+            if (health2 != null) health2.Died -= OnFighter2Died;
+        }
 
         void Start()
         {
-            // Initialize UI texts
-            fightStartText.gameObject.SetActive(false);
-            winText.gameObject.SetActive(false);
-            timesUpText.gameObject.SetActive(false);
+            Show(fightStartText, false);
+            Show(winText, false);
+            Show(timesUpText, false);
             UpdateScoreBoard();
-            
-            // Start a new fight
             StartNewFight();
+        }
+
+        void FixedUpdate()
+        {
+            if (IsFightActive)
+            {
+                TimeRemaining -= Time.fixedDeltaTime;
+                if (TimeRemaining <= 0f) EndRound(null);
+            }
+            else if (restartPending)
+            {
+                restartIn -= Time.fixedDeltaTime;
+                if (restartIn <= 0f) StartNewFight();
+            }
         }
 
         void Update()
         {
-            // Return if no fight is happening
-            if (!isFightActive) return;
+            if (IsFightActive) UpdateTimerText();
+        }
 
-            // Countdown
-            timeRemaining -= Time.deltaTime;
-
-            // Update Timer text
-            UpdateTimerText();
-
-            // Time out if run out of time
-            if (timeRemaining <= 0)
+        /// <summary>
+        /// Resets both fighters and starts a round. Safe to call at any time: a round in progress is dropped without
+        /// a result. The arena calls this by itself when Auto Restart is on; the agent can call it to reset an episode.
+        /// </summary>
+        public void StartNewFight()
+        {
+            restartPending = false;
+            if (fighter1 == null || fighter2 == null)
             {
-                TimeOut();
+                Debug.LogWarning($"{name}: a fighter was destroyed, so the arena cannot start another round.", this);
+                enabled = false;
+                return;
             }
+
+            ResetFighter(fighter1, spawnPoint1);
+            ResetFighter(fighter2, spawnPoint2);
+
+            CurrentRound++;
+            TimeRemaining = roundTime;
+            IsFightActive = true;
+
+            SetText(roundText, $"ROUND {CurrentRound}");
+            StartCoroutine(ShowBanner(fightStartText, fightStartTextDuration));
         }
 
-        void StartNewFight()
+        // Back on the spawn point at full health and stamina, with any swing in progress cut short.
+        // This is the episode reset recipe from the Combat README.
+        static void ResetFighter(GameObject fighter, Transform spawn)
         {
-            // Reset fighter positions
-            fighter1.transform.position = spawnPoint1.position;
-            fighter1.transform.rotation = spawnPoint1.rotation;
-            fighter2.transform.position = spawnPoint2.position;
-            fighter2.transform.rotation = spawnPoint2.rotation;
-
-            // Reset Health
-            ResetHealth(fighter1);
-            ResetHealth(fighter2);
-
-            // Display Starting Texts
-            StartCoroutine(ShowFightStartText());
-
-            // Start round
-            currentRound++;
-            UpdateRoundText();
-            timeRemaining = roundTime;
-            isFightActive = true;
-            Debug.Log("Arena Fight Start!");
+            fighter.transform.SetPositionAndRotation(spawn.position, spawn.rotation);
+            if (fighter.TryGetComponent(out AttackRunner runner)) runner.Interrupt();
+            if (fighter.TryGetComponent(out Health health)) health.ResetToFull();
+            if (fighter.TryGetComponent(out Stamina stamina)) stamina.ResetToFull();
         }
 
+        void OnFighter1Died() => EndRound(fighter2);
+        void OnFighter2Died() => EndRound(fighter1);
 
-        // When Someone wins 
-        void HandleDeath(GameObject loser)
+        // Called with the winner, or null when time ran out.
+        void EndRound(GameObject winner)
         {
-            if(!isFightActive) return;
+            if (!IsFightActive) return;
+            IsFightActive = false;
 
-            isFightActive = false;
-
-            // Determine winner
-            GameObject winner = (loser == fighter1) ? fighter2 : fighter1;
-            Debug.Log($"{winner.name} won! {loser.name} lost!");
-            UpdateScore(winner);
-
-            // Trigger fight end event
-            OnFightEnded?.Invoke(winner);
-
-            // Clear timer
-            timerText.text = "";
-
-            // Show winner text
-            StartCoroutine(ShowWinText(winner.name));
-
-            // Auto restart after delay
-            Invoke(nameof(StartNewFight), resetDelay);
-
-        }
-
-        // Update score after someone wins 
-        void UpdateScore(GameObject winner)
-        {
-            if (winner == fighter1)
-                score1++;
-            else
-                score2++;
-
+            if (winner == fighter1) Score1++;
+            else if (winner == fighter2) Score2++;
             UpdateScoreBoard();
-        }
 
-        // Reset health
-        void ResetHealth(GameObject fighter)
-        {
-            Health health = fighter.GetComponent<Health>();
-            if (health != null)
+            SetText(timerText, "");
+            if (winner != null)
             {
-                health.ResetToFull();
-                Debug.Log($"{fighter.name} health resets to {health.Current}.");
+                SetText(winText, $"{winner.name} WINS!");
+                StartCoroutine(ShowBanner(winText, winTextDuration));
             }
             else
             {
-                Debug.Log($"{fighter.name} has no Health component.");
+                StartCoroutine(ShowBanner(timesUpText, timesUpTextDuration));
             }
+
+            // Arm the restart before telling listeners, so a listener that calls StartNewFight itself cancels it.
+            restartPending = autoRestart;
+            restartIn = resetDelay;
+            FightEnded?.Invoke(winner);
         }
 
-        // Time out
-        void TimeOut()
+        // UI helpers. Every text is optional.
+
+        IEnumerator ShowBanner(Text text, float seconds)
         {
-            isFightActive = false;
-            Debug.Log("Times Up! Draw!");
-
-            // Trigger fight end event
-            OnFightEnded?.Invoke(null);
-
-            // Clear timer
-            timerText.text = "";
-
-            // Show winner text
-            StartCoroutine(ShowTimesUp());
-
-            // Auto restart after delay
-            Invoke(nameof(StartNewFight), resetDelay);
-
-        }
-
-
-
-        // Text Updates    
-
-        IEnumerator ShowTimesUp()
-        {
-            timesUpText.gameObject.SetActive(true);
-            yield return new WaitForSeconds(timesUpTextDuration);
-            timesUpText.gameObject.SetActive(false);
+            if (text == null) yield break;
+            text.gameObject.SetActive(true);
+            yield return new WaitForSeconds(seconds);
+            text.gameObject.SetActive(false);
         }
 
         void UpdateTimerText()
         {
-            // Convert total seconds to minutes and seconds
-            int minutes = Mathf.FloorToInt(timeRemaining / 60f);
-            int seconds = Mathf.FloorToInt(timeRemaining % 60f);
-
-            // Dispplay timer
+            if (timerText == null) return;
+            int minutes = Mathf.FloorToInt(TimeRemaining / 60f);
+            int seconds = Mathf.FloorToInt(TimeRemaining % 60f);
             timerText.text = $"{minutes:D2}:{seconds:D2}";
-        }
-
-        IEnumerator ShowWinText(string winnerName)
-        {
-            winText.text = $"{winnerName} WINS!";
-            winText.gameObject.SetActive(true);
-            yield return new WaitForSeconds(winTextDuration);
-            winText.gameObject.SetActive(false);
-        }
-
-        IEnumerator ShowFightStartText()
-        {
-            fightStartText.gameObject.SetActive(true);
-            yield return new WaitForSeconds(fightStartTextDuration);
-            fightStartText.gameObject.SetActive(false);
-        }
-
-        void UpdateRoundText()
-        {
-            roundText.text = $"ROUND {currentRound}";
         }
 
         void UpdateScoreBoard()
         {
-            score1Text.text = $"{fighter1.name} - {score1.ToString()}";
-            score2Text.text = $"{fighter2.name} - {score2.ToString()}";
+            SetText(score1Text, $"{fighter1.name} - {Score1}");
+            SetText(score2Text, $"{fighter2.name} - {Score2}");
         }
 
+        static void Show(Text text, bool on)
+        {
+            if (text != null) text.gameObject.SetActive(on);
+        }
 
+        static void SetText(Text text, string value)
+        {
+            if (text != null) text.text = value;
+        }
     }
-
-    
 }
