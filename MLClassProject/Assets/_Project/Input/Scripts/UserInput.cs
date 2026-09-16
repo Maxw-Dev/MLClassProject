@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 namespace BossFight.Input
 {
+    [RequireComponent(typeof(PlayerInput))]
+
     /// <summary>
     /// Reads input from the user and formats it into an Intent to be sent to a body
     /// Also resolve camera guidance through Cinemachine

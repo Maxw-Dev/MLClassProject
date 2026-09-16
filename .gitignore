@@ -17,3 +17,6 @@ results/
 
 # Renders and screenshots next to Blender sources stay local
 art/**/*.png
+
+#Builds
+builds/

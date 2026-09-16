@@ -8,6 +8,10 @@ requires-python = ">=3.10.1,<=3.10.12"
 dependencies = [
     "mlagents-envs",
     "mlagents",
+    "onnxruntime>=1.23.2",
+    # setuptools 84 no longer ships pkg_resources, which TensorBoard 2.20 still imports at startup,
+    # so `uv run tensorboard` fails without this pin. Verified on macOS and Windows.
+    "setuptools<70.0.0",
 ]
 
 # The Unity package com.unity.ml-agents 4.1.0 was built from this exact commit of the ml-agents repo
