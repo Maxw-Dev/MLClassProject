@@ -20,8 +20,11 @@ MonoBehaviour:
     rid: 3303485177201164290
   m_ActivePlatformGuid: 
   m_AdditionalPlatformBuildSettings: []
-  m_OverrideGlobalSceneList: 0
-  m_Scenes: []
+  m_OverrideGlobalSceneList: 1
+  m_Scenes:
+  - enabled: 1
+    path: Assets/_Project/Agent/Scenes/Agent_Smoke.unity
+    guid: 03f455a386c454c808e8d4358f1f6dc0
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:

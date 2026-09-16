@@ -1,5 +1,5 @@
-#Author: Andre Mata Assis
 #!/usr/bin/env bash
+#Author: Andre Mata Assis
 set -e
 
 CONFIG=${1:-"config/smoke.yaml"} #first argument or smoke.yaml on default
