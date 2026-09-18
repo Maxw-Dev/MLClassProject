@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae613eec7d3040e391177932a29ef01, type: 3}
+  m_Name: BossMove_RangedShot
+  m_EditorClassIdentifier: BossFight.Boss::BossFight.Boss.BossMoveData
+  DisplayName: Ranged Shot
+  WindupSeconds: 0.6
+  ActiveSeconds: 0.1
+  RecoverySeconds: 0.5
+  Damage: 12
+  StaminaCost: 0
+  Range: 20
+  Move: 8
+  CooldownSeconds: 4
+  HitOffset: {x: 0, y: 0, z: 0}
+  HitRadius: 0.5
+  WindupHitStunSeconds: 0
+  StunDamageMultiplier: 2
+  ProjectilePrefab: {fileID: 760183836862041052, guid: 13b96240e7ad24b1b9da006138828127, type: 3}
+  ProjectileSpeed: 12
+  ProjectileRange: 20

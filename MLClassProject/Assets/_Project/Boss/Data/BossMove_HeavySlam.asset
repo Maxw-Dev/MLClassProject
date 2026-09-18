@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cae613eec7d3040e391177932a29ef01, type: 3}
+  m_Name: BossMove_HeavySlam
+  m_EditorClassIdentifier: BossFight.Boss::BossFight.Boss.BossMoveData
+  DisplayName: Heavy Slam
+  WindupSeconds: 1.1
+  ActiveSeconds: 0.1
+  RecoverySeconds: 0.9
+  Damage: 25
+  StaminaCost: 0
+  Range: 4
+  Move: 6
+  CooldownSeconds: 3
+  HitOffset: {x: 0, y: 1, z: 2}
+  HitRadius: 2
+  WindupHitStunSeconds: 0
+  StunDamageMultiplier: 2
+  ProjectilePrefab: {fileID: 0}
+  ProjectileSpeed: 12
+  ProjectileRange: 20

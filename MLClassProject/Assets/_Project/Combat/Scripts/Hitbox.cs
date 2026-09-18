@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BossFight.Core;
 using UnityEngine;
@@ -24,6 +25,9 @@ namespace BossFight.Combat
         readonly Collider[] buffer = new Collider[32];
 
         public bool IsArmed { get; private set; }
+
+        /// <summary>This hitbox reached someone. They may still have i-framed it; <see cref="Health"/> decides that.</summary>
+        public event Action<IDamageable, DamageInfo> Hit;
         public Vector3 Offset { get => offset; set => offset = value; }
         public float Radius { get => radius; set => radius = Mathf.Max(0.01f, value); }
 
@@ -64,7 +68,7 @@ namespace BossFight.Combat
         {
             if (!IsArmed || attack == null) return;
             int count = Overlap();
-            for (int i = 0; i < count; i++) TryHit(buffer[i]);
+            for (int i = 0; i < count && IsArmed; i++) TryHit(buffer[i]);
         }
 
         int Overlap()
@@ -82,7 +86,9 @@ namespace BossFight.Combat
             if (attacker != null && hurt.transform.IsChildOf(attacker.transform)) return;   // never hit yourself
             if (!hitThisSwing.Add(hurt.Owner)) return;
 
-            hurt.Owner.TakeDamage(new DamageInfo(attack.Damage, attacker));
+            var info = new DamageInfo(attack.Damage, attacker);
+            hurt.Owner.TakeDamage(info);
+            Hit?.Invoke(hurt.Owner, info);
         }
 
         void OnDrawGizmos()
