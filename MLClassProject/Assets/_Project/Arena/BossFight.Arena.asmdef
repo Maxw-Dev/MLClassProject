@@ -3,7 +3,8 @@
     "rootNamespace": "BossFight.Arena",
     "references": [
         "BossFight.Core",
-        "BossFight.Combat"
+        "BossFight.Combat",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
