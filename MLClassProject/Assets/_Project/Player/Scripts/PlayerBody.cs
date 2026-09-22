@@ -24,13 +24,22 @@ namespace BossFight.Player
         // state based controller
         // Movement is handled independently of the buffer system
         // serves as system state definition
-        private enum Action {
+        public enum Action {
             None,
             Roll,
             LightAttack,
-            HeavyAttack
+            HeavyAttack,
+            Dead
         }
         private Action m_currentAction = Action.None;
+
+        /// <summary>
+        /// Gets the current action of the player.
+        /// </summary>
+        /// <returns>The current actio</returns>
+        public Action GetCurrentAction() {
+            return m_currentAction;
+        }
 
         // Base movement speed walking around
         [SerializeField] private float m_speed = 5f;
@@ -65,10 +74,15 @@ namespace BossFight.Player
         /// <summary>
         /// Calls corresponding handlers
         /// </summary>
-        void Update() {
+        void FixedUpdate() {
+            // don't do anything if dead
+            if (m_currentAction == Action.Dead) {
+                return;
+            }
+
             // reduce cooldown timer
             if (m_cooldownTimer > 0f) {
-                m_cooldownTimer -= Time.deltaTime;
+                m_cooldownTimer -= Time.fixedDeltaTime;
             }
 
             // Process this frame's intent and resolve buffer
@@ -78,7 +92,7 @@ namespace BossFight.Player
             Quaternion targetRotation = Quaternion.LookRotation(m_lastDirection, Vector3.up);
             float rotationSpeed = ActionReady() ? m_rotationSpeed : m_midActionRotationSpeed;
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation,
-                (ActionReady() ? m_rotationSpeed : m_midActionRotationSpeed) * Time.deltaTime);
+                (ActionReady() ? m_rotationSpeed : m_midActionRotationSpeed) * Time.fixedDeltaTime);
         }
 
         #region Input/Intent
@@ -156,7 +170,7 @@ namespace BossFight.Player
             // move the player accordingly
             // check if an action has not just been taken
             if (ActionReady()) {
-                transform.position += m_movementInput * m_speed * Time.deltaTime;
+                transform.position += m_movementInput * m_speed * Time.fixedDeltaTime;
             }
         }
 
@@ -202,9 +216,9 @@ namespace BossFight.Player
             while (m_cooldownTimer > 0f) {
                 float t = m_cooldownTimer / m_rollDuration; // inverted 
                 float distance = m_rollDistance * 2 * t; // integral of this from 0 to 1 is m_rollDistance
-                transform.position += m_lastDirection * distance     * Time.deltaTime;
+                transform.position += m_lastDirection * distance * Time.fixedDeltaTime;
                 
-                yield return new WaitForEndOfFrame();
+                yield return new WaitForFixedUpdate();
             }
         }
 
@@ -274,7 +288,17 @@ namespace BossFight.Player
             StopAllCoroutines();
             
             // Temporary death effect
-            Destroy(gameObject);
+            m_currentAction = Action.Dead;
+        }
+
+        /// <summary>
+        /// Called to reset player state
+        /// Revives and clears lingering input information
+        /// </summary>
+        public void Reset() {
+            m_currentAction = Action.None;
+            m_cooldownTimer = 0f;
+            m_bufferedInputs.Clear();
         }
 
         #endregion
