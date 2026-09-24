@@ -144,6 +144,7 @@ namespace BossFight.Arena
             if (fighter.TryGetComponent(out AttackRunner runner)) runner.Interrupt();
             if (fighter.TryGetComponent(out Health health)) health.ResetToFull();
             if (fighter.TryGetComponent(out Stamina stamina)) stamina.ResetToFull();
+            // if (fighter.TryGetComponent(out PlayerBody playerBody)) playerbody.Reset();
         }
 
         void OnFighter1Died() => EndRound(fighter2);
