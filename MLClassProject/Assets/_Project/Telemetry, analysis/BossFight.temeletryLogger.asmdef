@@ -2,8 +2,9 @@
     "name": "BossFight.telemetryLogger",
     "rootNamespace": "",
     "references": [
-        "GUID:4d95b8908935a46fbaff9dcfbd0af184",
-        "GUID:deebde157392a4eb2a4a6a1915320171"
+        "BossFight.Core",
+        "BossFight.Combat",
+        "BossFight.Arena"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
