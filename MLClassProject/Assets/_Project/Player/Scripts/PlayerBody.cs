@@ -10,6 +10,7 @@ namespace BossFight.Player
 {
     public class PlayerBody : MonoBehaviour
     {
+        private CharacterController m_controller;
         private Animator m_animator;
         private AttackRunner m_runner;
         private Health health;
@@ -66,6 +67,7 @@ namespace BossFight.Player
         /// Gets references to components
         /// </summary>
         void Start() {
+            m_controller = GetComponent<CharacterController>();
             m_runner = GetComponent<AttackRunner>();
             m_intentSource = GetComponent<IIntentSource>();
             m_animator = GetComponent<Animator>();
@@ -170,7 +172,7 @@ namespace BossFight.Player
             // move the player accordingly
             // check if an action has not just been taken
             if (ActionReady()) {
-                transform.position += m_movementInput * m_speed * Time.fixedDeltaTime;
+                m_controller.Move(m_movementInput * m_speed * Time.fixedDeltaTime);
             }
         }
 
@@ -216,8 +218,7 @@ namespace BossFight.Player
             while (m_cooldownTimer > 0f) {
                 float t = m_cooldownTimer / m_rollDuration; // inverted 
                 float distance = m_rollDistance * 2 * t; // integral of this from 0 to 1 is m_rollDistance
-                transform.position += m_lastDirection * distance * Time.fixedDeltaTime;
-                
+                m_controller.Move(m_lastDirection * distance * Time.fixedDeltaTime);
                 yield return new WaitForFixedUpdate();
             }
         }
