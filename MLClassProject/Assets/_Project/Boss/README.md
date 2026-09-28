@@ -14,10 +14,11 @@ body.State;                            // Idle, Attacking, Stunned, Dead
 body.Phase; body.TimeInPhase;          // Combat's Windup / Active / Recovery while attacking
 body.CooldownRemaining(move);          // seconds, 0 when ready
 body.Target;                           // the player; found by the Player tag if not set
+body.Projectiles;                      // shots still in flight
 
 body.AttackPhaseChanged += (move, phase) => { };   // Windup, Active, Recovery, then Idle
 body.StateChanged += state => { };
-body.ResetForEpisode();                // stop, full health, cooldowns cleared; the arena moves the body
+body.ResetForEpisode();                // stop, full health, cooldowns cleared, shots removed; the arena moves the body
 ```
 
 `BossMove` in Core is the whole action space: `None`, `Advance`, `Retreat`, `StrafeLeft`, `StrafeRight`, then the attacks.

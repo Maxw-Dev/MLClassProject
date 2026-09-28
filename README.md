@@ -12,7 +12,7 @@ Game code lives in `MLClassProject/Assets/_Project/`. One folder per ticket, one
 | `_Project/Player` | `BossFight.Player` | Core, Combat | T3 |
 | `_Project/Boss` | `BossFight.Boss` | Core, Combat | T4 |
 | `_Project/Arena` | `BossFight.Arena` | Core, Combat | T5 |
-| `_Project/Agent` | `BossFight.Agent` | Core, Combat, Boss, ML-Agents | T6 · Max |
+| `_Project/Agent` | `BossFight.Agent` | Core, Combat, Boss, Arena, ML-Agents | T6 · Max |
 | `_Project/Input` | `BossFight.Input` | Core, Input System, Cinemachine | T7 · Glove |
 | `tools/`, `config/` (repo root) | Python, no assembly | — | T8 · Training tooling |
 | `_Project/Telemetry` | `BossFight.Telemetry` | Core | T9 · Episode logging |

@@ -43,7 +43,8 @@ namespace BossFight.Boss
 
         void OnHit(IDamageable victim, DamageInfo info) => Expire();
 
-        void Expire()
+        /// <summary>Disarms the shot and removes it now. It does this itself on its first hit or at the end of its range.</summary>
+        public void Expire()
         {
             if (!launched) return;
             launched = false;
