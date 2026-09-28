@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using BossFight.Combat;
+using BossFight.Player;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -103,7 +104,7 @@ namespace BossFight.Arena
 
         void DeterminePlayerOrBoss()
         {
-            if (fighter1.CompareTag("Player") != null)
+            if (fighter1.CompareTag("Player") != true)
             {
                 player = fighter1;
                 boss = fighter2;

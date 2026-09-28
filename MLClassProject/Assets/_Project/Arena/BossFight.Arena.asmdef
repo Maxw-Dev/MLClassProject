@@ -4,7 +4,8 @@
     "references": [
         "BossFight.Core",
         "BossFight.Combat",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "BossFight.Player"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

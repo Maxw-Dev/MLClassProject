@@ -628,6 +628,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 839168}
     - target: {fileID: 4524026698547203982, guid: 3399980a36f73d64a803071076db6544, type: 3}
+      propertyPath: fighter1
+      value: 
+      objectReference: {fileID: 1462265551}
+    - target: {fileID: 4524026698547203982, guid: 3399980a36f73d64a803071076db6544, type: 3}
       propertyPath: fighter2
       value: 
       objectReference: {fileID: 1996929695}
@@ -1005,6 +1009,11 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: 
+--- !u!1 &1462265551 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3113008584809805747, guid: 3399980a36f73d64a803071076db6544, type: 3}
+  m_PrefabInstance: {fileID: 715486995}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1496678822
 GameObject:
   m_ObjectHideFlags: 0
@@ -1224,7 +1233,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4851839663261107284, guid: e18a4f02b3d684e5dbdb7b900e48715c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1996929698}
+    - targetCorrespondingSourceObject: {fileID: 4851839663261107284, guid: e18a4f02b3d684e5dbdb7b900e48715c, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1996929697}
   m_SourcePrefab: {fileID: 100100000, guid: e18a4f02b3d684e5dbdb7b900e48715c, type: 3}
 --- !u!1 &1727924325
 GameObject:
@@ -1345,6 +1360,48 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5879285621097244806, guid: e18a4f02b3d684e5dbdb7b900e48715c, type: 3}
   m_PrefabInstance: {fileID: 1579720564}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1996929697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996929695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e832523fa90c1cb4ba4f9d038918add8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Input::BossFight.Input.UserInput
+--- !u!114 &1996929698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1996929695}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
+  m_Actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
+  m_NotificationBehavior: 3
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: Player
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
