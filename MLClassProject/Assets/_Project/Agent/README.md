@@ -35,18 +35,52 @@ T10's full list replaces this in Phase 3. Changing the observations means retrai
 
 | Event | Default | Trainer parameter |
 |---|---|---|
-| Win | +1 | `win_reward` |
-| Loss | -1 | `loss_penalty` |
-| Damage dealt | +0.5 for a whole health bar, in proportion | `damage_dealt_reward` |
-| Damage taken | -0.5 for a whole health bar, in proportion (stun hits count double) | `damage_taken_penalty` |
-| Fighting time | -0.002 per second | `time_penalty_per_second` |
+| Win | +1, down to +0.5 for a win at the buzzer | `win_reward`, `win_time_decay` |
+| Loss | -1, however long the fight took | `loss_penalty` |
+| Draw (time runs out) | -0.5 | `draw_penalty` |
+| Damage dealt | +0.5 for a whole health bar, in proportion. Overkill does not count | `damage_dealt_reward` |
+| Damage taken | -0.5 for a whole health bar, in proportion. Hits while stunned count double | `damage_taken_penalty` |
+| Fighting time | off | `time_penalty_per_second` |
 
-A draw (time runs out) adds nothing extra. Set any of these under `environment_parameters` in the trainer config to try
-other weights without a new build.
+What a fight is worth with these defaults (60 s round):
+
+| Outcome | Reward |
+|---|---|
+| Fast clean win (15 s) | +1.38 |
+| Slow win (55 s, lost half its health) | +0.79 |
+| Draw, boss ahead (dealt 60%, took 20%) | -0.30 |
+| Draw, nobody hit | -0.50 |
+| Close loss (dealt 90%) | -1.05 |
+| Blowout loss | -1.50 |
+
+Why these numbers, from the ML-Agents reward guidance and Unity's example games:
+
+- Every win beats every draw and every draw beats every loss, so running out the clock never pays.
+- Time pressure sits on the win (Unity's Soccer example does the same), not on every second. A per-second penalty also
+  makes a slow loss cost more than a fast one, which teaches a losing boss to give up.
+- Rewards per decision stay within about -1..1, and most of the signal is positive (damage dealt, winning).
+- Health bars are compared as a whole: the boss has 300 health and the player 100, so each point the boss deals is
+  worth three it takes and trading hits pays. Raise `damage_taken_penalty` if it plays too recklessly.
+
+### Tuning
+
+1. Decide the order the outcomes should come in (the table above), then play each one by hand in `Agent_Boss`: a fast
+   win, running away for 60 s, taking a lead and then running. The overlay's episode reward should come out in that order.
+2. Change one weight per training run under `environment_parameters` in the trainer config. No new build needed:
+
+   ```yaml
+   environment_parameters:
+     draw_penalty: 0.75
+   ```
+
+3. Compare runs on `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`. Cumulative Reward changes scale whenever a
+   weight changes, so it cannot be compared across runs.
+4. Fights are about 600 decisions long, so the trainer config should look further ahead than the defaults:
+   `gamma: 0.995` and `time_horizon: 512`.
 
 ## Episode loop
 
-When the arena's fight ends, the agent adds the win or loss reward and ends its episode on the next physics step. The
+When the arena's fight ends, the agent adds the win, draw or loss reward and ends its episode on the next physics step. The
 next episode starts a new fight (both fighters back on their spawn points at full health) and resets the boss:
 cooldowns, stun, and shots still in flight. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
 

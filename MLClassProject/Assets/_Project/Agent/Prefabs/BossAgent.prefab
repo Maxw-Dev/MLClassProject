@@ -123,10 +123,12 @@ MonoBehaviour:
   arenaCenter: {fileID: 0}
   arenaHalfSize: 19
   winReward: 1
+  winTimeDecay: 0.5
   lossPenalty: 1
+  drawPenalty: 0.5
   damageDealtReward: 0.5
   damageTakenPenalty: 0.5
-  timePenaltyPerSecond: 0.002
+  timePenaltyPerSecond: 0
   heuristicInput: {fileID: 0}
 --- !u!114 &7882411894093228028
 MonoBehaviour:

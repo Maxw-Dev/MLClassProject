@@ -51,14 +51,20 @@ namespace BossFight.RL
         [SerializeField, Min(1f)] float arenaHalfSize = 19f;
 
         [Header("Rewards (environment_parameters in the trainer config override these)")]
+        [Tooltip("Earned for a win at the very start of a round. Later wins earn less, see Win Time Decay.")]
         [SerializeField] float winReward = 1f;
+        [Tooltip("Share of the win reward lost by winning at the last second. 0.5: a win at the buzzer is worth half.")]
+        [SerializeField, Range(0f, 1f)] float winTimeDecay = 0.5f;
+        [Tooltip("Lost for a loss, however long the fight took.")]
         [SerializeField] float lossPenalty = 1f;
-        [Tooltip("Earned for taking the opponent's whole health bar, in proportion for smaller hits.")]
+        [Tooltip("Lost when time runs out. Keep it between the smallest win and the loss penalty, so every win beats a draw and every draw beats a loss.")]
+        [SerializeField] float drawPenalty = 0.5f;
+        [Tooltip("Earned for taking the opponent's whole health bar, in proportion for smaller hits. Only damage that comes off the bar counts.")]
         [SerializeField] float damageDealtReward = 0.5f;
         [Tooltip("Lost for losing the boss's whole health bar, in proportion for smaller hits. Hits while stunned count double.")]
         [SerializeField] float damageTakenPenalty = 0.5f;
-        [Tooltip("Lost for every second a fight is on, so stalling is never free. Keep a full round well under the loss penalty.")]
-        [SerializeField] float timePenaltyPerSecond = 0.002f;
+        [Tooltip("Lost for every second a fight is on. Off by default: it also makes a slow loss cost more than a fast one.")]
+        [SerializeField] float timePenaltyPerSecond = 0f;
 
         [Header("Hand play")]
         [Tooltip("An IIntentSource (such as UserInput) that the Heuristic behavior reads. Empty: the heuristic stands still.")]
@@ -79,7 +85,8 @@ namespace BossFight.RL
         bool fightOver;
         bool firstEpisode = true;
         string outcome;
-        float win, loss, dealt, taken, perSecond;   // this episode's reward weights
+        float bossHealthSeen, opponentHealthSeen;   // health after the last hit, so only damage that comes off the bar counts
+        float win, winDecay, loss, draw, dealt, taken, perSecond;   // this episode's reward weights
 
         public BossBody Body => body;
         public FightManager Arena => arena;
@@ -100,6 +107,8 @@ namespace BossFight.RL
                 opponentRunner = opponent.GetComponent<AttackRunner>();
             }
             keyboard = heuristicInput as IIntentSource;
+            bossHealthSeen = health.Current;
+            opponentHealthSeen = opponentHealth != null ? opponentHealth.Current : 0f;
             foreach (var move in body.Moves)
                 if (move != null) maxStun = Mathf.Max(maxStun, move.WindupHitStunSeconds);
 
@@ -135,7 +144,9 @@ namespace BossFight.RL
         {
             var parameters = Academy.Instance.EnvironmentParameters;
             win = parameters.GetWithDefault("win_reward", winReward);
+            winDecay = Mathf.Clamp01(parameters.GetWithDefault("win_time_decay", winTimeDecay));
             loss = parameters.GetWithDefault("loss_penalty", lossPenalty);
+            draw = parameters.GetWithDefault("draw_penalty", drawPenalty);
             dealt = parameters.GetWithDefault("damage_dealt_reward", damageDealtReward);
             taken = parameters.GetWithDefault("damage_taken_penalty", damageTakenPenalty);
             perSecond = parameters.GetWithDefault("time_penalty_per_second", timePenaltyPerSecond);
@@ -155,6 +166,8 @@ namespace BossFight.RL
             fightStartedAt = Time.time;
             lastObservedAt = Time.time;
             lastOpponentPosition = opponent != null ? opponent.transform.position : transform.position;
+            bossHealthSeen = health.Current;
+            opponentHealthSeen = opponentHealth != null ? opponentHealth.Current : 0f;
         }
 
         public override void CollectObservations(VectorSensor sensor)
@@ -262,23 +275,35 @@ namespace BossFight.RL
         void OnFightEnded(GameObject winner)
         {
             bool bossWon = winner == gameObject;
-            bool draw = winner == null;
-            if (bossWon) AddReward(win);
-            else if (!draw) AddReward(-loss);
-            outcome = bossWon ? "Boss won" : draw ? "Draw, time ran out" : "Boss lost";
+            bool timedOut = winner == null;
+            // A win is worth less the longer it took (Unity's Soccer example does the same), a loss always costs the same,
+            // and a draw sits in between: every win beats every draw, every draw beats every loss.
+            float roundUsed = arena != null ? Mathf.Clamp01(1f - arena.TimeRemaining / roundLength) : 0f;
+            if (bossWon) AddReward(win * (1f - winDecay * roundUsed));
+            else if (timedOut) AddReward(-draw);
+            else AddReward(-loss);
+            outcome = bossWon ? "Boss won" : timedOut ? "Draw, time ran out" : "Boss lost";
 
             var stats = Academy.Instance.StatsRecorder;
             stats.Add("Fight/BossWinRate", bossWon ? 1f : 0f);
-            stats.Add("Fight/DrawRate", draw ? 1f : 0f);
+            stats.Add("Fight/DrawRate", timedOut ? 1f : 0f);
             stats.Add("Fight/Length", Time.time - fightStartedAt);
             fightOver = true;
         }
 
-        void OnDamaged(DamageInfo hit) => AddReward(-taken * hit.Amount / health.Max);
+        // Only what comes off a health bar counts, so the overkill on a killing blow earns nothing extra.
+        void OnDamaged(DamageInfo hit)
+        {
+            float lost = bossHealthSeen - health.Current;
+            bossHealthSeen = health.Current;
+            if (lost > 0f) AddReward(-taken * lost / health.Max);
+        }
 
         void OnOpponentDamaged(DamageInfo hit)
         {
-            if (hit.Source == gameObject) AddReward(dealt * hit.Amount / opponentHealth.Max);
+            float lost = opponentHealthSeen - opponentHealth.Current;
+            opponentHealthSeen = opponentHealth.Current;
+            if (lost > 0f && hit.Source == gameObject) AddReward(dealt * lost / opponentHealth.Max);
         }
 
         // The first attack whose key is down and that can start now.
