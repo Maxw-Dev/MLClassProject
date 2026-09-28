@@ -8,10 +8,14 @@ time out lives in Boss; this folder only decides.
 - `Scripts/BossAgent.cs`: the Agent. Observations, action mask, rewards, episode loop.
 - `Prefabs/BossAgent.prefab`: Boss variant with Behavior Parameters (name `Boss`, 46 observations, one branch of 10),
   a Decision Requester (every 5 physics steps, so 0.1 s) and the `BossAgent`.
-- `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2, a sparring dummy is fighter 1,
-  8 m apart, 60 s rounds, Auto Restart off (the agent starts every fight).
-- `Scenes/Agent_Boss.unity`: one training arena. Play the boss by hand through the agent (Behavior Type is
-  Heuristic Only in this scene). `Scripts/BossAgentHud.cs` is the overlay.
+- `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2 and the PlayerBot (T12) is
+  fighter 1, wired to each other rather than found by tag, so many arenas can run side by side. 8 m apart,
+  60 s rounds, Auto Restart off (the agent starts every fight).
+- `Scenes/Agent_Boss.unity`: one training arena. Play the boss by hand through the agent against the bot (Behavior
+  Type is Heuristic Only in this scene). `Scripts/BossAgentHud.cs` is the overlay.
+- `Scenes/Agent_Train.unity`: eight training arenas, 80 m apart so a boss shot (20 m) never reaches the next one.
+  This is the scene the training build profiles build. `Scripts/TrainingLogFilter.cs` hides info-level logs there.
+- `config/boss.yaml` (repo root): the PPO settings.
 - `Scenes/Agent_Smoke.unity`, `Scripts/SmokeAgent.cs`: the pipeline smoke test from T1. Not part of the game.
 
 ## Actions
@@ -82,11 +86,36 @@ Why these numbers, from the ML-Agents reward guidance and Unity's example games:
 
 When the arena's fight ends, the agent adds the win, draw or loss reward and ends its episode on the next physics step. The
 next episode starts a new fight (both fighters back on their spawn points at full health) and resets the boss:
-cooldowns, stun, and shots still in flight. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
+cooldowns, stun, and shots still in flight. It also calls the opponent's `PlayerBody.Reset()`, so a player that died
+comes back. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
 
 ## Playing the boss by hand
 
-Open `Scenes/Agent_Boss.unity` and press Play. WASD toward the dummy is Advance, away is Retreat, sideways strafes.
-J or left click is Quick, K or right click is Slam, 1 is Super, 2 is Ranged, 3 is AoE. The dummy swings a heavy attack
-every 2.5 s at whatever stands in front of it. The overlay shows the round clock, both healths, the move the agent
-took, which moves are allowed and the reward so far.
+Open `Scenes/Agent_Boss.unity` and press Play. WASD toward the bot is Advance, away is Retreat, sideways strafes.
+J or left click is Quick, K or right click is Slam, 1 is Super, 2 is Ranged, 3 is AoE. The PlayerBot fights back: it
+walks in and attacks while the boss is idle, backs off from most attacks, rolls away from the ranged shot and punishes
+the super. The overlay shows the round clock, both healths, the move the agent took, which moves are allowed and the
+reward so far.
+
+## Training
+
+In the editor, from the repo root:
+
+```
+uv run mlagents-learn config/boss.yaml --run-id=boss_v0
+```
+
+then open `Scenes/Agent_Train.unity` and press Play. Run the same command with `--resume` to continue a run.
+
+From a build: File > Build Profiles, pick the macOS or Windows profile (both build `Agent_Train`), build it into
+`builds/` at the repo root, then:
+
+```
+./tools/train.sh config/boss.yaml boss_v0 builds/MLClassProject.app 4 20 --no-graphics
+```
+
+Watch with `uv run tensorboard --logdir results`. A run is learning when `Fight/BossWinRate` climbs, `Fight/DrawRate`
+stays low and `Environment/Cumulative Reward` rises. The model lands in `results/<run-id>/Boss.onnx`.
+
+The PlayerBot decides once per rendered frame, so at 20x speed it reacts about three times per game second instead of
+sixty. Until it decides in FixedUpdate (T12), the boss is learning against a slow bot.

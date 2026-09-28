@@ -4,6 +4,7 @@ using BossFight.Arena;
 using BossFight.Boss;
 using BossFight.Combat;
 using BossFight.Core;
+using BossFight.Player;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -75,6 +76,7 @@ namespace BossFight.RL
         Health opponentHealth;
         Stamina opponentStamina;
         AttackRunner opponentRunner;
+        PlayerBody opponentBody;
         IIntentSource keyboard;
         float maxStun = 0.01f;
         float roundLength = 1f;
@@ -105,6 +107,7 @@ namespace BossFight.RL
                 opponentHealth = opponent.GetComponent<Health>();
                 opponentStamina = opponent.GetComponent<Stamina>();
                 opponentRunner = opponent.GetComponent<AttackRunner>();
+                opponentBody = opponent.GetComponent<PlayerBody>();
             }
             keyboard = heuristicInput as IIntentSource;
             bossHealthSeen = health.Current;
@@ -160,6 +163,9 @@ namespace BossFight.RL
                 roundLength = Mathf.Max(arena.TimeRemaining, 0.01f);
             }
             firstEpisode = false;
+            // The arena refills health and moves the fighters. A player that died last fight also needs its own reset
+            // to come back to life, which FightManager does not do yet.
+            if (opponentBody != null) opponentBody.Reset();
             body.ResetForEpisode();   // after the arena's reset, which starts a cooldown when it cuts a swing short
             if (opponent != null) body.Target = opponent.transform;
             Physics.SyncTransforms();   // a CharacterController ignores a teleport until physics has seen it
