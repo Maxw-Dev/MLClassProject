@@ -3,6 +3,7 @@ using BossFight.Core;
 using BossFight.Arena;
 using System;
 using BossFight.Combat;
+using System.IO;
 
 
 namespace BossFight.telemetryLogger
@@ -41,20 +42,30 @@ namespace BossFight.telemetryLogger
             float fightDur = 100;
             // EndTemp
 
-            Health bossHealth = boss.GetComponent<Health>();
-            Health playerHealth = player.GetComponent<Health>();
-            // Also need boss ML Model policy version, player bot (playerbot-[name of bot behavior])
+            Health bossHealth = boss?.GetComponent<Health>();
+            Health plrHealth = player?.GetComponent<Health>();
+            float damageTaken = 200; // bossHealth.Max - bossHealth.Current;
+            float damageDealt = 20; //plrHealth.Max - plrHealth.Current;
+            
+            // Also need boss ML Model policy version, player bot (playerbot-[name of bot behavior]), presumably from the player object
             int policyVer = 0;
             string playerName = "playerbot-TempName";
             // EndTemp
             
-            string path = Application.persistentDataPath + "/Episodes Logs/";
+            string path = Application.persistentDataPath + "/Episode Logs/";
             string fileName = "log.csv";
             string filePath = path + fileName;
-            string newDetails = "" + policyVer + bossWon + fightDur + playerHealth;
-            
-            //csv format: "Policy Version", "Boss Won", "Fight Duration (s)", "Damage Dealt", "Damage Taken", "Player Fighter"
+            string newLogDetails = String.Format("{0},{1},{2},{3},{4},{5}\n", policyVer, bossWon, fightDur, damageDealt, damageTaken, playerName);
 
+            if (!File.Exists(filePath))
+            {
+                // Format of CSV
+                string logHeader = "Policy Version, Boss Won, Fight Duration (s), Damage Dealth, Damage Taken, Player Fighter\n";
+                File.WriteAllText(filePath, logHeader);
+                Debug.Log("File Created: " + filePath);
+            }
+            File.AppendAllText(filePath, newLogDetails);
+            Debug.Log("Data appended to csv:\n" + newLogDetails);
         }
     }
 
