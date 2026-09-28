@@ -46,13 +46,12 @@ namespace BossFight.Player.Bots
         /// </summary>
         protected void FindBoss()
         {
-            if (boss_transform != null) return;
-            var boss = GameObject.FindWithTag("Boss");
-            if (boss != null)
+            if (boss_transform == null)
             {
-                boss_transform = boss.transform;
-                boss_body = boss.GetComponent<BossBody>();
+                var boss = GameObject.FindWithTag("Boss");
+                if (boss != null) boss_transform = boss.transform;
             }
+            if (boss_transform != null) boss_body = boss_transform.GetComponent<BossBody>();
         }
 
         private void LateUpdate()
@@ -87,7 +86,10 @@ namespace BossFight.Player.Bots
         {
             //Reset everything
             ResetQueue();
-            
+
+            //Stand still if there is no boss to fight
+            if (boss_body == null) return;
+
             BossState boss_state = boss_body.State;
 
             switch (boss_state)
