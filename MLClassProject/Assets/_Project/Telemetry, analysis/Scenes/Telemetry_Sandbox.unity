@@ -662,6 +662,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: ArenaContainer
       objectReference: {fileID: 0}
+    - target: {fileID: 1177384159221049155, guid: 3399980a36f73d64a803071076db6544, type: 3}
+      propertyPath: m_TagString
+      value: Boss
+      objectReference: {fileID: 0}
+    - target: {fileID: 3113008584809805747, guid: 3399980a36f73d64a803071076db6544, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 4524026698547203982, guid: 3399980a36f73d64a803071076db6544, type: 3}
       propertyPath: winText
       value: 
