@@ -105,7 +105,9 @@ In the editor, from the repo root:
 uv run mlagents-learn config/boss.yaml --run-id=boss_v0
 ```
 
-then open `Scenes/Agent_Train.unity` and press Play. Run the same command with `--resume` to continue a run.
+then open `Scenes/Agent_Train.unity` and press Play once the trainer says it is listening (it waits about a minute).
+Run the same command with `--resume` to continue a run, or with `--force` to start it over. A run that never got
+going leaves a `results/<run-id>` folder behind, and the next start with that id stops until you add one of them.
 
 From a build: File > Build Profiles, pick the macOS or Windows profile (both build `Agent_Train`), build it into
 `builds/` at the repo root, then:
