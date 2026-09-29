@@ -11,8 +11,9 @@ time out lives in Boss; this folder only decides.
 - `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2 and the PlayerBot (T12) is
   fighter 1, wired to each other rather than found by tag, so many arenas can run side by side. 8 m apart,
   60 s rounds, Auto Restart off (the agent starts every fight).
-- `Scenes/Agent_Boss.unity`: one training arena. Play the boss by hand through the agent against the bot (Behavior
-  Type is Heuristic Only in this scene). `Scripts/BossAgentHud.cs` is the overlay.
+- `Scenes/Agent_Boss.unity`: one training arena where the trained boss (Inference Only, `Models/Boss_v0_609k.onnx`)
+  fights the PlayerBot, to watch how a model plays. Set its Behavior Type to Heuristic Only to steer the boss yourself.
+  `Scripts/BossAgentHud.cs` is the overlay.
 - `Scenes/Agent_Train.unity`: eight training arenas, 80 m apart so a boss shot (20 m) never reaches the next one.
   This is the scene the training build profiles build. `Scripts/TrainingLogFilter.cs` hides info-level logs there.
 - `Scenes/Agent_Play.unity`: you play the player (keyboard) against a trained boss. The boss runs a model from
@@ -72,7 +73,7 @@ Why these numbers, from the ML-Agents reward guidance and Unity's example games:
 
 ### Tuning
 
-1. Decide the order the outcomes should come in (the table above), then play each one by hand in `Agent_Boss`: a fast
+1. Decide the order the outcomes should come in (the table above), then play each one by hand in `Agent_Boss` (Behavior Type set to Heuristic Only): a fast
    win, running away for 60 s, taking a lead and then running. The overlay's episode reward should come out in that order.
 2. Change one weight per training run under `environment_parameters` in the trainer config. No new build needed:
 
@@ -93,9 +94,11 @@ next episode starts a new fight (both fighters back on their spawn points at ful
 cooldowns, stun, and shots still in flight. It also calls the opponent's `PlayerBody.Reset()`, so a player that died
 comes back. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
 
-## Playing the boss by hand
+## Watching the boss, or steering it by hand
 
-Open `Scenes/Agent_Boss.unity` and press Play. WASD toward the bot is Advance, away is Retreat, sideways strafes.
+Open `Scenes/Agent_Boss.unity` and press Play to watch the trained boss fight the PlayerBot. To steer the boss
+yourself instead, select TrainingArena > Boss and set Behavior Parameters > Behavior Type to Heuristic Only (the
+Keyboard object is already wired to it). Then WASD toward the bot is Advance, away is Retreat, sideways strafes.
 J or left click is Quick, K or right click is Slam, 1 is Super, 2 is Ranged, 3 is AoE. The PlayerBot fights back: it
 walks in and attacks while the boss is idle, backs off from most attacks, rolls away from the ranged shot and punishes
 the super. The overlay shows the round clock, both healths, the move the agent took, which moves are allowed and the
