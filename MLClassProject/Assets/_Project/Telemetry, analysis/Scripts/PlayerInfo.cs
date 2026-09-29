@@ -2,11 +2,14 @@ using UnityEngine;
 using BossFight.Player;
 using BossFight.Core;
 using BossFight.Combat;
+using System;
 
 namespace BossFight.Telemetry
 {   
 public class PlayerInfo : MonoBehaviour
 {
+        [SerializeField] private String m_behaviorSource = "Unspecified";
+
         private Health m_health;
         private PlayerBody m_playerBody;
         private CharacterController m_controller;
@@ -75,6 +78,16 @@ public class PlayerInfo : MonoBehaviour
             return m_playerBody.GetCurrentAction();
         }
 
+        /// <summary>
+        /// a string that can be set in editor
+        /// this is stand in for a model version or something of the like
+        /// Defaults to "Unspecified" if not set manually
+        /// </summary>
+        /// <returns>string identifier</returns>
+        public String GetBehaviorSource()
+        {
+            return m_behaviorSource;
+        }
 
     }
 }
