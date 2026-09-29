@@ -4,7 +4,8 @@
     "references": [
         "BossFight.Core",
         "BossFight.Combat",
-        "BossFight.Arena"
+        "BossFight.Arena",
+        "BossFight.Player"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
