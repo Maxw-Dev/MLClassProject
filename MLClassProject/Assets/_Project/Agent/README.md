@@ -15,6 +15,10 @@ time out lives in Boss; this folder only decides.
   Type is Heuristic Only in this scene). `Scripts/BossAgentHud.cs` is the overlay.
 - `Scenes/Agent_Train.unity`: eight training arenas, 80 m apart so a boss shot (20 m) never reaches the next one.
   This is the scene the training build profiles build. `Scripts/TrainingLogFilter.cs` hides info-level logs there.
+- `Scenes/Agent_Play.unity`: you play the player (keyboard) against a trained boss. The boss runs a model from
+  `Models/` with Behavior Type Inference Only.
+- `Models/`: trained boss models copied in from `results/`. `Boss_v0_609k.onnx` is the first run, 609k steps against
+  the default bot.
 - `config/boss.yaml` (repo root): the PPO settings.
 - `Scenes/Agent_Smoke.unity`, `Scripts/SmokeAgent.cs`: the pipeline smoke test from T1. Not part of the game.
 
@@ -96,6 +100,15 @@ J or left click is Quick, K or right click is Slam, 1 is Super, 2 is Ranged, 3 i
 walks in and attacks while the boss is idle, backs off from most attacks, rolls away from the ranged shot and punishes
 the super. The overlay shows the round clock, both healths, the move the agent took, which moves are allowed and the
 reward so far.
+
+## Playing against a trained boss
+
+Open `Scenes/Agent_Play.unity` and press Play, with no trainer running. WASD moves, J or left click is the light
+attack, K or right click the heavy, Space rolls. A new round starts as soon as one ends, and the overlay shows the
+round clock, both healths and what the boss picks.
+
+To try another model, copy its `.onnx` from `results/<run-id>/` (or a checkpoint from `results/<run-id>/Boss/`) into
+`Models/`, select TrainingArena > Boss in the scene, and set Behavior Parameters > Model to it.
 
 ## Training
 
