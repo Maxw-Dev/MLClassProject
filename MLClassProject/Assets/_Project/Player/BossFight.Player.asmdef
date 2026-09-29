@@ -3,7 +3,8 @@
     "rootNamespace": "BossFight.Player",
     "references": [
         "BossFight.Core",
-        "BossFight.Combat"
+        "BossFight.Combat",
+        "BossFight.Boss"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
