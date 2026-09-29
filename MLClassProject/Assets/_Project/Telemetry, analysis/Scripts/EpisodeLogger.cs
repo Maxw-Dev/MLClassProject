@@ -60,7 +60,7 @@ namespace BossFight.telemetryLogger
             if (!File.Exists(filePath))
             {
                 // Format of CSV
-                string logHeader = "Policy Version, Boss Won, Fight Duration (s), Damage Dealth, Damage Taken, Player Fighter\n";
+                string logHeader = "Policy Version,Boss Won,Fight Duration (s),Damage Dealt,Damage Taken,Player Fighter\n";
                 File.WriteAllText(filePath, logHeader);
                 Debug.Log("File Created: " + filePath);
             }
