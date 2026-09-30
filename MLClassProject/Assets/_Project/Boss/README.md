@@ -12,7 +12,7 @@ body.TryPerform(BossMove.QuickAttack); // false if it cannot start right now
 
 body.State;                            // Idle, Attacking, Stunned, Dead
 body.Phase; body.TimeInPhase;          // Combat's Windup / Active / Recovery while attacking
-body.CooldownRemaining(move);          // seconds, 0 when ready
+body.CooldownRemaining(move);          // seconds, 0 when ready (shared gap included)
 body.Target;                           // the player; found by the Player tag if not set
 body.Projectiles;                      // shots still in flight
 
@@ -38,7 +38,8 @@ are now long enough to react to, recoveries long enough to punish, and cooldowns
 | RangedShot | 0.9 | projectile | 0.8 | 6 | r0.5, 12 m/s, 20 m | 12 | standing far, not strafing |
 | AoeBurst | 1.0 | 0.1 | 1.2 | 10 | sphere r4 on the boss | 15 | dodging too often |
 
-Cooldowns count from the end of the move. The boss turns toward the player at full speed while idle, slowly during a
+Cooldowns count from the end of the move. After any attack ends, every attack also waits a shared gap (Attack Gap
+Seconds on BossBody, 1 s), so the boss cannot chain different attacks back to back. Moving is still allowed. The boss turns toward the player at full speed while idle, slowly during a
 windup, and not at all from Active until the move ends.
 
 **The punish window:** a hit that lands during the super's windup interrupts it and leaves the boss stunned for 3 s,

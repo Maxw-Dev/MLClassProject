@@ -34,7 +34,7 @@ masked, so there is always a legal choice.
 
 | Group | Values |
 |---|---|
-| Boss (27) | health, state one-hot (4), current attack one-hot (6), attack phase one-hot (4), progress through the phase, cooldown left per attack (5), stun left, locomotion one-hot (5) |
+| Boss (27) | health, state one-hot (4), current attack one-hot (6), attack phase one-hot (4), progress through the phase, cooldown left per attack, shared gap included (5), stun left, locomotion one-hot (5) |
 | Opponent position (7) | distance, direction to it in the boss's frame (2), its facing in the boss's frame (2), its velocity in the boss's frame (2) |
 | Opponent state (9) | health, stamina, attack phase one-hot (4), progress through the phase, damage of its current attack, invulnerable (rolling) |
 | Arena (3) | boss position from the arena center, sideways and along the line to the opponent (2), round time left |

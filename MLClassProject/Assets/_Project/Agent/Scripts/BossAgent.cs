@@ -193,7 +193,7 @@ namespace BossFight.RL
             foreach (var attack in AttackMoves)
             {
                 var data = body.DataFor(attack);
-                sensor.AddObservation(data != null && data.CooldownSeconds > 0f ? body.CooldownRemaining(attack) / data.CooldownSeconds : 0f);
+                sensor.AddObservation(data != null && data.CooldownSeconds > 0f ? Mathf.Clamp01(body.CooldownRemaining(attack) / data.CooldownSeconds) : 0f);
             }
             sensor.AddObservation(Mathf.Clamp01(body.StunRemaining / maxStun));
             sensor.AddOneHotObservation(Array.IndexOf(LocomotionMoves, body.Locomotion) + 1, LocomotionMoves.Length + 1);

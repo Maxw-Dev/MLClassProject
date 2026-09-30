@@ -26,6 +26,8 @@ namespace BossFight.Boss
         [SerializeField] Hitbox meleeHitbox;
         [Tooltip("Where projectiles spawn. The body's own transform when empty.")]
         [SerializeField] Transform muzzle;
+        [Tooltip("After any attack ends, every attack also waits this long on top of its own cooldown, so the boss cannot chain different attacks back to back. Moving is still allowed.")]
+        [SerializeField, Min(0f)] float attackGapSeconds = 1f;
 
         [Header("Target")]
         [Tooltip("The player. Found by the Player tag when empty.")]
@@ -120,9 +122,10 @@ namespace BossFight.Boss
                 byMove[data.Move] = data;
                 cooldowns.Add((data.Move, data.CooldownSeconds));
             }
-            moveSet = new BossMoveSet(cooldowns);
+            moveSet = new BossMoveSet(cooldowns, attackGapSeconds);
         }
 
+        /// <summary>Seconds until this attack can start again: its own cooldown or the shared gap after any attack. 0 for movement.</summary>
         public float CooldownRemaining(BossMove move) => moveSet.CooldownRemaining(move);
         public BossMoveData DataFor(BossMove move) => byMove.TryGetValue(move, out var data) ? data : null;
 

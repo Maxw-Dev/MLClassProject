@@ -125,6 +125,64 @@ namespace BossFight.Boss.Tests
             Assert.IsFalse(set.CanPerform(BossMove.QuickAttack));
         }
 
+        static BossMoveSet SetWithGap() => new BossMoveSet(new[]
+        {
+            (BossMove.QuickAttack, 0.5f),
+            (BossMove.HeavySlam, 3f),
+        }, attackGapSeconds: 1f);
+
+        [Test]
+        public void TheSharedGapBlocksEveryAttackButNotMovement()
+        {
+            var set = SetWithGap();
+            set.BeginAttack(BossMove.QuickAttack);
+            set.EndAttack();
+            Assert.IsFalse(set.CanPerform(BossMove.HeavySlam), "never used, but inside the gap");
+            Assert.IsTrue(set.CanPerform(BossMove.Advance));
+            Assert.IsTrue(set.CanPerform(BossMove.None));
+            set.Tick(0.99f);
+            Assert.IsFalse(set.CanPerform(BossMove.HeavySlam));
+            set.Tick(0.02f);
+            Assert.IsTrue(set.CanPerform(BossMove.HeavySlam));
+        }
+
+        [Test]
+        public void CooldownRemainingIsTheLongerOfItsOwnCooldownAndTheGap()
+        {
+            var set = SetWithGap();
+            set.BeginAttack(BossMove.QuickAttack);
+            set.EndAttack();
+            Assert.AreEqual(1f, set.CooldownRemaining(BossMove.QuickAttack), 0.0001f, "own 0.5, gap 1");
+            Assert.AreEqual(1f, set.CooldownRemaining(BossMove.HeavySlam), 0.0001f, "gap only");
+            Assert.AreEqual(0f, set.CooldownRemaining(BossMove.Advance), "movement never waits");
+
+            set.Tick(1f);
+            set.BeginAttack(BossMove.HeavySlam);
+            set.EndAttack();
+            Assert.AreEqual(3f, set.CooldownRemaining(BossMove.HeavySlam), 0.0001f, "own 3, gap 1");
+            Assert.AreEqual(1f, set.CooldownRemaining(BossMove.QuickAttack), 0.0001f, "own is over, gap 1");
+        }
+
+        [Test]
+        public void ACancelledAttackStartsNoGap()
+        {
+            var set = SetWithGap();
+            set.BeginAttack(BossMove.QuickAttack);
+            set.CancelAttack();
+            Assert.IsTrue(set.CanPerform(BossMove.HeavySlam));
+        }
+
+        [Test]
+        public void ResetClearsTheSharedGap()
+        {
+            var set = SetWithGap();
+            set.BeginAttack(BossMove.QuickAttack);
+            set.EndAttack();
+            set.Reset();
+            Assert.IsTrue(set.CanPerform(BossMove.HeavySlam));
+            Assert.AreEqual(0f, set.CooldownRemaining(BossMove.HeavySlam));
+        }
+
         [Test]
         public void ResetClearsStateAndCooldowns()
         {
