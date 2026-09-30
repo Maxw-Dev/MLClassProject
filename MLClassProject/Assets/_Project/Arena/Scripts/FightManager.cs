@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using BossFight.Combat;
+using BossFight.Player;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,6 +19,8 @@ namespace BossFight.Arena
         [Header("Fighters")]
         [SerializeField] private GameObject fighter1;
         [SerializeField] private GameObject fighter2;
+        private GameObject player;
+        private GameObject boss;
 
         [Header("Spawn Points")]
         [SerializeField] private Transform spawnPoint1;
@@ -44,6 +47,7 @@ namespace BossFight.Arena
         [SerializeField] private Text score2Text;
 
         public bool IsFightActive { get; private set; }
+        public bool bossWon { get; private set; }
         public float TimeRemaining { get; private set; }
         public int CurrentRound { get; private set; }
         public int Score1 { get; private set; }
@@ -51,7 +55,12 @@ namespace BossFight.Arena
         public bool AutoRestart { get => autoRestart; set => autoRestart = value; }
 
         /// <summary>The round is over. The winner, or null when time ran out.</summary>
-        public event Action<GameObject> FightEnded;
+        /// The list of Objects this event passes
+        /// GameObject boss: The boss
+        /// GameObject player: The player
+        /// bool bossWOn: If boss has won, it is true. Otherwise, it is false. 
+        /// Float duration: The duration of this roud
+        public event Action<GameObject, GameObject, bool, float> FightEnded;
 
         Health health1, health2;
         bool restartPending;
@@ -88,8 +97,23 @@ namespace BossFight.Arena
             Show(fightStartText, false);
             Show(winText, false);
             Show(timesUpText, false);
+            DeterminePlayerOrBoss();
             UpdateScoreBoard();
             StartNewFight();
+        }
+
+        void DeterminePlayerOrBoss()
+        {
+            if (fighter1.CompareTag("Player") != true)
+            {
+                player = fighter1;
+                boss = fighter2;
+            }
+            else
+            {
+                boss = fighter1;
+                player = fighter2;
+            }
         }
 
         void FixedUpdate()
@@ -97,7 +121,7 @@ namespace BossFight.Arena
             if (IsFightActive)
             {
                 TimeRemaining -= Time.fixedDeltaTime;
-                if (TimeRemaining <= 0f) EndRound(null);
+                if (TimeRemaining <= 0f) EndRound(null, roundTime - TimeRemaining);
             }
             else if (restartPending)
             {
@@ -118,6 +142,7 @@ namespace BossFight.Arena
         public void StartNewFight()
         {
             restartPending = false;
+            bossWon = false;
             if (fighter1 == null || fighter2 == null)
             {
                 Debug.LogWarning($"{name}: a fighter was destroyed, so the arena cannot start another round.", this);
@@ -144,19 +169,40 @@ namespace BossFight.Arena
             if (fighter.TryGetComponent(out AttackRunner runner)) runner.Interrupt();
             if (fighter.TryGetComponent(out Health health)) health.ResetToFull();
             if (fighter.TryGetComponent(out Stamina stamina)) stamina.ResetToFull();
+            if (fighter.TryGetComponent(out PlayerBody playerBody)) playerBody.Reset();
         }
 
-        void OnFighter1Died() => EndRound(fighter2);
-        void OnFighter2Died() => EndRound(fighter1);
+        void OnFighter1Died() => EndRound(fighter2, roundTime - TimeRemaining);
+        void OnFighter2Died() => EndRound(fighter1, roundTime - TimeRemaining);
 
         // Called with the winner, or null when time ran out.
-        void EndRound(GameObject winner)
+        void EndRound(GameObject winner, float roundDuration)
         {
             if (!IsFightActive) return;
             IsFightActive = false;
 
-            if (winner == fighter1) Score1++;
-            else if (winner == fighter2) Score2++;
+            if (winner == fighter1) { 
+                Score1++;
+                if (fighter1 = player)
+                {
+                    bossWon = false;
+                }
+                else
+                {
+                    bossWon = true;
+                }
+            }
+            else if (winner == fighter2) {
+                Score2++;
+                if (fighter2 = player)
+                {
+                    bossWon = false;
+                }
+                else
+                {
+                    bossWon = true;
+                }
+            }
             UpdateScoreBoard();
 
             SetText(timerText, "");
@@ -170,10 +216,12 @@ namespace BossFight.Arena
                 StartCoroutine(ShowBanner(timesUpText, timesUpTextDuration));
             }
 
+
             // Arm the restart before telling listeners, so a listener that calls StartNewFight itself cancels it.
             restartPending = autoRestart;
             restartIn = resetDelay;
-            FightEnded?.Invoke(winner);
+            // Check the event declaration   
+            FightEnded?.Invoke(boss, player, bossWon, roundDuration);
         }
 
         // UI helpers. Every text is optional.
