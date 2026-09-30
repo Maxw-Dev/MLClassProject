@@ -698,6 +698,10 @@ PrefabInstance:
       propertyPath: fightStartText
       value: 
       objectReference: {fileID: 1564584359}
+    - target: {fileID: 8436161104669511229, guid: 3399980a36f73d64a803071076db6544, type: 3}
+      propertyPath: m_behaviorSource
+      value: Richard
+      objectReference: {fileID: 0}
     - target: {fileID: 8763383577415511901, guid: 3399980a36f73d64a803071076db6544, type: 3}
       propertyPath: m_LocalPosition.x
       value: 2.60848
