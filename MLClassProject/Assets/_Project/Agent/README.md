@@ -19,7 +19,8 @@ time out lives in Boss; this folder only decides.
 - `Scenes/Agent_Play.unity`: you play the player (keyboard) against a trained boss. The boss runs a model from
   `Models/` with Behavior Type Inference Only.
 - `Models/`: trained boss models copied in from `results/`. `Boss_v0_609k.onnx` is the first run, 609k steps against
-  the default bot.
+  the default bot, trained on the first-pass boss frame data. Retrain after changing move timings in `Boss/Data`:
+  the model learned the old ones.
 - `config/boss.yaml` (repo root): the PPO settings.
 - `Scenes/Agent_Smoke.unity`, `Scripts/SmokeAgent.cs`: the pipeline smoke test from T1. Not part of the game.
 

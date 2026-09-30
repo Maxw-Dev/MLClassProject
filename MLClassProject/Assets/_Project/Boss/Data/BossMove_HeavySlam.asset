@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: BossMove_HeavySlam
   m_EditorClassIdentifier: BossFight.Boss::BossFight.Boss.BossMoveData
   DisplayName: Heavy Slam
-  WindupSeconds: 1.1
+  WindupSeconds: 1.3
   ActiveSeconds: 0.1
-  RecoverySeconds: 0.9
+  RecoverySeconds: 1.1
   Damage: 25
   StaminaCost: 0
   Range: 4
   Move: 6
-  CooldownSeconds: 3
+  CooldownSeconds: 6
   HitOffset: {x: 0, y: 1, z: 2}
   HitRadius: 2
   WindupHitStunSeconds: 0
