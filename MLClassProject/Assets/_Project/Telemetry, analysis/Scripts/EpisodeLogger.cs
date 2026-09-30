@@ -4,7 +4,7 @@ using BossFight.Arena;
 using System;
 using BossFight.Combat;
 using System.IO;
-
+using BossFight.Player;
 
 namespace BossFight.telemetryLogger
 {
@@ -34,28 +34,21 @@ namespace BossFight.telemetryLogger
         /// policy version, outcome, duration, damage dealt and taken, who was fighting.
         /// </summary>
         /// <param name="winner">The winner of the battle</param>
-        public void LogEpisode(GameObject winner) {
-            // Temp until LogEpisode returns these values
-            GameObject player = winner;
-            bool bossWon = false;
-            GameObject boss = null;
-            float fightDur = 100;
-            // EndTemp
-
+        public void LogEpisode(GameObject player, GameObject boss, bool bossWon, float roundDuration) {
+            Debug.Log(player.name);
+            PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
+            Debug.Log(playerInfo);
             Health bossHealth = boss?.GetComponent<Health>();
-            Health plrHealth = player?.GetComponent<Health>();
-            float damageTaken = 200; // bossHealth.Max - bossHealth.Current;
-            float damageDealt = 20; //plrHealth.Max - plrHealth.Current;
+            float damageTaken = bossHealth.Max - bossHealth.Current;
+            float damageDealt = playerInfo.GetHealthMax() - playerInfo.GetHealth();
             
-            // Also need boss ML Model policy version, player bot (playerbot-[name of bot behavior]), presumably from the player object
-            int policyVer = 0;
-            string playerName = "playerbot-TempName";
-            // EndTemp
+            int policyVer = 0; // Temp; needs to be provided from  
+            string playerName = player.GetComponent<PlayerInfo>().GetBehaviorSource();
             
             string path = Application.persistentDataPath + "/Episode Logs/";
             string fileName = "log.csv";
             string filePath = path + fileName;
-            string newLogDetails = String.Format("{0},{1},{2},{3},{4},{5}\n", policyVer, bossWon, fightDur, damageDealt, damageTaken, playerName);
+            string newLogDetails = String.Format("{0},{1},{2},{3},{4},{5}\n", policyVer, bossWon, roundDuration, damageDealt, damageTaken, playerName);
 
             if (!File.Exists(filePath))
             {

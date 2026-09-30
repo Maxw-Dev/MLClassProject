@@ -4,7 +4,7 @@ using BossFight.Core;
 using BossFight.Combat;
 using System;
 
-namespace BossFight.Telemetry
+namespace BossFight.Player
 {   
 public class PlayerInfo : MonoBehaviour
 {
@@ -34,6 +34,11 @@ public class PlayerInfo : MonoBehaviour
         public float GetHealth()
         {
             return m_health.Current;
+        }
+
+        public float GetHealthMax()
+        {
+            return m_health.Max;
         }
 
         /// <summary>
