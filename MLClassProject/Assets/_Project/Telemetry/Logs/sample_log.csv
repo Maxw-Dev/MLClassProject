@@ -1,0 +1,8 @@
+Policy Version,Boss Won,Fight Duration (s),Damage Dealt,Damage Taken,Player Fighter
+0,False,100,20,200,playerbot-TempName
+1,False,121,30,200,playerbot-TempName
+2,False,151,40,200,playerbot-TempName
+4,False,200,50,150,playerbot-TempName
+5,False,84,80,200,playerbot-TempName
+7,False,33,100,180,playerbot-TempName
+8,False,79,100,160,playerbot-TempName

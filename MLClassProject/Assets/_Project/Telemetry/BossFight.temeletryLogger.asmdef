@@ -1,0 +1,19 @@
+{
+    "name": "BossFight.telemetryLogger",
+    "rootNamespace": "",
+    "references": [
+        "BossFight.Core",
+        "BossFight.Combat",
+        "BossFight.Arena",
+        "BossFight.Player"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
