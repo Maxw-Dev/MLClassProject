@@ -15,12 +15,12 @@ MonoBehaviour:
   DisplayName: Super Attack
   WindupSeconds: 2
   ActiveSeconds: 0.2
-  RecoverySeconds: 0.8
+  RecoverySeconds: 1.2
   Damage: 45
   StaminaCost: 0
   Range: 7.5
   Move: 7
-  CooldownSeconds: 12
+  CooldownSeconds: 15
   HitOffset: {x: 0, y: 1, z: 3.5}
   HitRadius: 4
   WindupHitStunSeconds: 3

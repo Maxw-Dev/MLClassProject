@@ -54,7 +54,7 @@ namespace BossFight.Player.Bots
             if (boss_transform != null) boss_body = boss_transform.GetComponent<BossBody>();
         }
 
-        private void LateUpdate()
+        private void FixedUpdate()
         {
             m_intent = new Intent
             {

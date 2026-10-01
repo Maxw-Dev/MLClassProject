@@ -12,12 +12,13 @@ body.TryPerform(BossMove.QuickAttack); // false if it cannot start right now
 
 body.State;                            // Idle, Attacking, Stunned, Dead
 body.Phase; body.TimeInPhase;          // Combat's Windup / Active / Recovery while attacking
-body.CooldownRemaining(move);          // seconds, 0 when ready
+body.CooldownRemaining(move);          // seconds, 0 when ready (shared gap included)
 body.Target;                           // the player; found by the Player tag if not set
+body.Projectiles;                      // shots still in flight
 
 body.AttackPhaseChanged += (move, phase) => { };   // Windup, Active, Recovery, then Idle
 body.StateChanged += state => { };
-body.ResetForEpisode();                // stop, full health, cooldowns cleared; the arena moves the body
+body.ResetForEpisode();                // stop, full health, cooldowns cleared, shots removed; the arena moves the body
 ```
 
 `BossMove` in Core is the whole action space: `None`, `Advance`, `Retreat`, `StrafeLeft`, `StrafeRight`, then the attacks.
@@ -26,17 +27,19 @@ The RL agent (T6) calls `TryPerform` with its chosen move each decision and mask
 ## The moves
 
 Every number is in a `BossMoveData` asset in `Data/` (Create → BossFight → Boss Move). It is an `AttackData` (Combat
-runs the timing) plus cooldown, hit shape, stun, and projectile settings. First-pass values:
+runs the timing) plus cooldown, hit shape, stun, and projectile settings. Current values (second pass: the first pass let a near-random boss win 79% of fights against the bot, so windups
+are now long enough to react to, recoveries long enough to punish, and cooldowns long enough to stop spam):
 
 | Move | Windup | Active | Recovery | Cooldown | Hit shape | Damage | Punishes |
 |---|---|---|---|---|---|---|---|
-| QuickAttack | 0.3 | 0.1 | 0.4 | 0.5 | sphere r0.8, 1.2 m ahead | 8 | staying in and swinging |
-| HeavySlam | 1.1 | 0.1 | 0.9 | 3 | sphere r2, 2 m ahead | 25 | rolling too early |
-| SuperAttack | 2.0 | 0.2 | 0.8 | 12 | sphere r4, 3.5 m ahead | 45 | hanging back |
-| RangedShot | 0.6 | projectile | 0.5 | 4 | r0.5, 12 m/s, 20 m | 12 | standing far, not strafing |
-| AoeBurst | 0.7 | 0.1 | 1.0 | 8 | sphere r4 on the boss | 15 | dodging too often |
+| QuickAttack | 0.55 | 0.1 | 0.6 | 2 | sphere r0.8, 1.2 m ahead | 8 | staying in and swinging |
+| HeavySlam | 1.3 | 0.1 | 1.1 | 6 | sphere r2, 2 m ahead | 25 | rolling too early |
+| SuperAttack | 2.0 | 0.2 | 1.2 | 15 | sphere r4, 3.5 m ahead | 45 | hanging back |
+| RangedShot | 0.9 | projectile | 0.8 | 6 | r0.5, 12 m/s, 20 m | 12 | standing far, not strafing |
+| AoeBurst | 1.0 | 0.1 | 1.2 | 10 | sphere r4 on the boss | 15 | dodging too often |
 
-Cooldowns count from the end of the move. The boss turns toward the player at full speed while idle, slowly during a
+Cooldowns count from the end of the move. After any attack ends, every attack also waits a shared gap (Attack Gap
+Seconds on BossBody, 1 s), so the boss cannot chain different attacks back to back. Moving is still allowed. The boss turns toward the player at full speed while idle, slowly during a
 windup, and not at all from Active until the move ends.
 
 **The punish window:** a hit that lands during the super's windup interrupts it and leaves the boss stunned for 3 s,

@@ -18,6 +18,9 @@ namespace BossFight.Boss
         float rangeLeft;
         bool launched;
 
+        /// <summary>The way the shot is flying, as a unit vector.</summary>
+        public Vector3 Direction => direction;
+
         void Awake() => hitbox = GetComponent<Hitbox>();
 
         public void Launch(BossMoveData move, GameObject attacker, Vector3 dir, float metersPerSecond, float range)
@@ -43,7 +46,8 @@ namespace BossFight.Boss
 
         void OnHit(IDamageable victim, DamageInfo info) => Expire();
 
-        void Expire()
+        /// <summary>Disarms the shot and removes it now. It does this itself on its first hit or at the end of its range.</summary>
+        public void Expire()
         {
             if (!launched) return;
             launched = false;

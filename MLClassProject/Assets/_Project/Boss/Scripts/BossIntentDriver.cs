@@ -9,9 +9,14 @@ namespace BossFight.Boss
     /// through T7's UserInput. Stick toward the player is Advance, away is Retreat, sideways is a strafe.
     /// Light attack is Quick, heavy is Slam, debug keys 1, 2, 3 are Super, Ranged, AoE. Held keys repeat as soon as allowed.
     /// Debug key 4 makes the sandbox dummy swing, to test what a hit during the boss's windup does.
+    /// The key mapping is public and static so the agent's hand-play heuristic (T6) uses the same keys.
     /// </summary>
     public class BossIntentDriver : MonoBehaviour
     {
+        /// <summary>Every attack, in the order they are tried when several keys are held.</summary>
+        public static readonly BossMove[] Attacks =
+            { BossMove.QuickAttack, BossMove.HeavySlam, BossMove.SuperAttack, BossMove.RangedShot, BossMove.AoeBurst };
+
         [SerializeField] BossBody body;
 
         [Header("Sandbox dummy (key 4 makes it swing)")]
@@ -32,19 +37,32 @@ namespace BossFight.Boss
             if (source == null || body == null) return;
             var intent = source.GetIntent();
 
-            body.TryPerform(LocomotionFor(intent.Move));
-            if (intent.LightAttack) body.TryPerform(BossMove.QuickAttack);
-            if (intent.HeavyAttack) body.TryPerform(BossMove.HeavySlam);
-            if ((intent.Debug & 1) != 0) body.TryPerform(BossMove.SuperAttack);
-            if ((intent.Debug & 2) != 0) body.TryPerform(BossMove.RangedShot);
-            if ((intent.Debug & 4) != 0) body.TryPerform(BossMove.AoeBurst);
+            var target = body.Target;
+            body.TryPerform(target != null ? LocomotionFor(intent.Move, body.transform.position, target.position) : BossMove.None);
+            foreach (var attack in Attacks)
+                if (Requests(intent, attack)) body.TryPerform(attack);
             if ((intent.Debug & 8) != 0 && dummyRunner != null && dummyAttack != null) dummyRunner.TryStart(dummyAttack);
         }
 
-        BossMove LocomotionFor(Vector3 move)
+        /// <summary>Is this attack's key held? Light is Quick, heavy is Slam, debug 1, 2, 3 are Super, Ranged, AoE.</summary>
+        public static bool Requests(Intent intent, BossMove attack)
         {
-            if (move.sqrMagnitude < 0.01f || body.Target == null) return BossMove.None;
-            var toTarget = body.Target.position - body.transform.position;
+            switch (attack)
+            {
+                case BossMove.QuickAttack: return intent.LightAttack;
+                case BossMove.HeavySlam: return intent.HeavyAttack;
+                case BossMove.SuperAttack: return (intent.Debug & 1) != 0;
+                case BossMove.RangedShot: return (intent.Debug & 2) != 0;
+                case BossMove.AoeBurst: return (intent.Debug & 4) != 0;
+                default: return false;
+            }
+        }
+
+        /// <summary>A world-space stick direction as locomotion relative to the target: toward is Advance, away is Retreat, sideways strafes.</summary>
+        public static BossMove LocomotionFor(Vector3 move, Vector3 bossPosition, Vector3 targetPosition)
+        {
+            if (move.sqrMagnitude < 0.01f) return BossMove.None;
+            var toTarget = targetPosition - bossPosition;
             toTarget.y = 0f;
             if (toTarget.sqrMagnitude < 0.0001f) return BossMove.None;
             toTarget.Normalize();

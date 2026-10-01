@@ -16,6 +16,6 @@ MonoBehaviour:
   WindupSeconds: 0.1
   ActiveSeconds: 0.5
   RecoverySeconds: 0.15
-  Damage: 7
+  Damage: 14
   StaminaCost: 12.5
   Range: 2

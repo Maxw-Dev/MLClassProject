@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: BossMove_QuickAttack
   m_EditorClassIdentifier: BossFight.Boss::BossFight.Boss.BossMoveData
   DisplayName: Quick Attack
-  WindupSeconds: 0.3
+  WindupSeconds: 0.55
   ActiveSeconds: 0.1
-  RecoverySeconds: 0.4
+  RecoverySeconds: 0.6
   Damage: 8
   StaminaCost: 0
   Range: 2
   Move: 5
-  CooldownSeconds: 0.5
+  CooldownSeconds: 2
   HitOffset: {x: 0, y: 1, z: 1.2}
   HitRadius: 0.8
   WindupHitStunSeconds: 0

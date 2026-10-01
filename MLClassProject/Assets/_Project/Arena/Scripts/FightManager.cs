@@ -104,7 +104,7 @@ namespace BossFight.Arena
 
         void DeterminePlayerOrBoss()
         {
-            if (fighter1.CompareTag("Player") != true)
+            if (fighter1.CompareTag("Player") == true)
             {
                 player = fighter1;
                 boss = fighter2;
@@ -183,7 +183,7 @@ namespace BossFight.Arena
 
             if (winner == fighter1) { 
                 Score1++;
-                if (fighter1 = player)
+                if (fighter1 == player)
                 {
                     bossWon = false;
                 }
@@ -194,7 +194,7 @@ namespace BossFight.Arena
             }
             else if (winner == fighter2) {
                 Score2++;
-                if (fighter2 = player)
+                if (fighter2 == player)
                 {
                     bossWon = false;
                 }

@@ -20,3 +20,6 @@ art/**/*.png
 
 #Builds
 builds/
+
+#Local notes
+docs/

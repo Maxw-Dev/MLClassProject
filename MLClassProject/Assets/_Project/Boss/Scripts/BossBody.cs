@@ -26,6 +26,8 @@ namespace BossFight.Boss
         [SerializeField] Hitbox meleeHitbox;
         [Tooltip("Where projectiles spawn. The body's own transform when empty.")]
         [SerializeField] Transform muzzle;
+        [Tooltip("After any attack ends, every attack also waits this long on top of its own cooldown, so the boss cannot chain different attacks back to back. Moving is still allowed.")]
+        [SerializeField, Min(0f)] float attackGapSeconds = 1f;
 
         [Header("Target")]
         [Tooltip("The player. Found by the Player tag when empty.")]
@@ -49,6 +51,8 @@ namespace BossFight.Boss
         BossMoveSet moveSet = new BossMoveSet(Array.Empty<(BossMove, float)>());
         BossMove locomotion = BossMove.None;
         BossMoveData current;
+        readonly List<BossProjectile> projectiles = new List<BossProjectile>();
+        static readonly Predicate<BossProjectile> Gone = p => p == null;
 
         public BossState State => moveSet.State;
         public BossMove CurrentAttack => moveSet.CurrentAttack;
@@ -59,6 +63,8 @@ namespace BossFight.Boss
         public float StunRemaining => moveSet.StunRemaining;
         public Transform Target { get => target; set => target = value; }
         public IReadOnlyList<BossMoveData> Moves => moves;
+        /// <summary>The boss's shots still in flight. <see cref="ResetForEpisode"/> removes them.</summary>
+        public IReadOnlyList<BossProjectile> Projectiles => projectiles;
 
         /// <summary>An attack and the phase it just entered: Windup, Active, Recovery, then Idle when it ends.</summary>
         public event Action<BossMoveData, AttackPhase> AttackPhaseChanged;
@@ -116,9 +122,10 @@ namespace BossFight.Boss
                 byMove[data.Move] = data;
                 cooldowns.Add((data.Move, data.CooldownSeconds));
             }
-            moveSet = new BossMoveSet(cooldowns);
+            moveSet = new BossMoveSet(cooldowns, attackGapSeconds);
         }
 
+        /// <summary>Seconds until this attack can start again: its own cooldown or the shared gap after any attack. 0 for movement.</summary>
         public float CooldownRemaining(BossMove move) => moveSet.CooldownRemaining(move);
         public BossMoveData DataFor(BossMove move) => byMove.TryGetValue(move, out var data) ? data : null;
 
@@ -149,7 +156,7 @@ namespace BossFight.Boss
             return StartAttack(byMove[move]);
         }
 
-        /// <summary>Episode reset: stop everything, full health, cooldowns cleared. Moving the body is the arena's job.</summary>
+        /// <summary>Episode reset: stop everything, full health, cooldowns cleared, shots in flight removed. Moving the body is the arena's job.</summary>
         public void ResetForEpisode()
         {
             runner.Interrupt();
@@ -157,6 +164,9 @@ namespace BossFight.Boss
             locomotion = BossMove.None;
             moveSet.Reset();
             health.ResetToFull();
+            foreach (var shot in projectiles)
+                if (shot != null) shot.Expire();
+            projectiles.Clear();
             StateChanged?.Invoke(State);
         }
 
@@ -233,11 +243,13 @@ namespace BossFight.Boss
             var projectile = Instantiate(data.ProjectilePrefab, muzzle.position, Quaternion.LookRotation(transform.forward));
             projectile.gameObject.SetActive(true);
             projectile.Launch(data, gameObject, transform.forward, data.ProjectileSpeed, data.ProjectileRange);
+            projectiles.Add(projectile);
         }
 
         void FixedUpdate()
         {
             float dt = Time.fixedDeltaTime;
+            projectiles.RemoveAll(Gone);
             bool wasStunned = moveSet.State == BossState.Stunned;
             moveSet.Tick(dt);
             if (wasStunned && moveSet.State == BossState.Idle)
