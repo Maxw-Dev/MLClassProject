@@ -6,21 +6,24 @@ time out lives in Boss; this folder only decides.
 ## What is here
 
 - `Scripts/BossAgent.cs`: the Agent. Observations, action mask, rewards, episode loop.
-- `Prefabs/BossAgent.prefab`: Boss variant with Behavior Parameters (name `Boss`, 46 observations, one branch of 10),
+- `Scripts/OpponentMemory.cs`: what the boss has seen of its opponent, for the reaction delay and the habit
+  observations. Tested in `Tests/OpponentMemoryTests.cs`.
+- `Prefabs/BossAgent.prefab`: Boss variant with Behavior Parameters (name `Boss`, 55 observations, one branch of 10),
   a Decision Requester (every 5 physics steps, so 0.1 s) and the `BossAgent`.
 - `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2 and the PlayerBot (T12) is
   fighter 1, wired to each other rather than found by tag, so many arenas can run side by side. 8 m apart,
   60 s rounds, Auto Restart off (the agent starts every fight).
-- `Scenes/Agent_Boss.unity`: one training arena where the trained boss (Inference Only, `Models/Boss_v1.onnx`)
+- `Scenes/Agent_Boss.unity`: one training arena where the trained boss (Inference Only, `Models/Boss_v2.onnx`)
   fights the PlayerBot, to watch how a model plays. Set its Behavior Type to Heuristic Only to steer the boss yourself.
   `Scripts/BossAgentHud.cs` is the overlay.
 - `Scenes/Agent_Train.unity`: eight training arenas, 80 m apart so a boss shot (20 m) never reaches the next one.
   This is the scene the training build profiles build. `Scripts/TrainingLogFilter.cs` hides info-level logs there.
 - `Scenes/Agent_Play.unity`: you play the player (keyboard) against a trained boss. The boss runs a model from
   `Models/` with Behavior Type Inference Only.
-- `Models/`: trained boss models copied in from `results/`. `Boss_v1.onnx` is the one `Agent_Play` and `Agent_Boss`
-  use. `Boss_v0_609k.onnx` is the first run, kept as a baseline. Retrain after changing move timings in `Boss/Data`:
-  a model only knows the timings it trained on.
+- `Models/`: trained boss models copied in from `results/`. `Boss_v2.onnx` is the one `Agent_Play`, `Agent_Boss` and
+  `Arena/Scenes/Arena2.unity` use. `Boss_v0_609k.onnx` and `Boss_v1.onnx` are earlier runs on the old 46 inputs, kept
+  for the record: they cannot run on the current agent. Retrain after changing move timings in `Boss/Data` or the
+  observations: a model only knows what it trained on.
 - `config/boss.yaml` (repo root): the PPO settings.
 - `Scenes/Agent_Smoke.unity`, `Scripts/SmokeAgent.cs`: the pipeline smoke test from T1. Not part of the game.
 
@@ -30,16 +33,29 @@ One discrete branch with one entry per `BossMove`: None, Advance, Retreat, Straf
 HeavySlam, SuperAttack, RangedShot, AoeBurst. Every decision masks what `BossBody.CanPerform` says no to. None is never
 masked, so there is always a legal choice.
 
-## Observations (v0, 46 floats, all scaled to about -1..1)
+## Observations (v2, 55 floats, all scaled to about -1..1)
 
 | Group | Values |
 |---|---|
 | Boss (27) | health, state one-hot (4), current attack one-hot (6), attack phase one-hot (4), progress through the phase, cooldown left per attack, shared gap included (5), stun left, locomotion one-hot (5) |
 | Opponent position (7) | distance, direction to it in the boss's frame (2), its facing in the boss's frame (2), its velocity in the boss's frame (2) |
 | Opponent state (9) | health, stamina, attack phase one-hot (4), progress through the phase, damage of its current attack, invulnerable (rolling) |
+| Opponent habits (6) | seconds since its last roll, light attack and heavy attack (3), the usual gap between uses of each (3). Both out of 20 s |
+| Boss's shot (3) | one in flight, its distance to the opponent, whether it is heading at them (1 straight at, -1 straight away) |
 | Arena (3) | boss position from the arena center, sideways and along the line to the opponent (2), round time left |
 
-T10's full list replaces this in Phase 3. Changing the observations means retraining from scratch.
+**Reaction time.** Everything about the opponent (its position, state and habits) is what it was 0.15 s ago, so the
+boss reacts like a person instead of on the frame a button is pressed. `reaction_delay` in `config/boss.yaml` changes
+it for a run, up to 0.5 s, without changing the observation size.
+
+v2 takes three things from T10's input list (Richard's "Boss Model Inputs" doc): the reaction delay, the opponent's
+habits and the boss's shot. It keeps relative positions rather than world positions (the same situation looks the
+same anywhere in the arena, as in Unity's examples), leaves out squared inputs (the network learns curves by itself)
+and keeps round time and stamina. The usual gap follows the doc: it grows like the time since last use and is divided
+by 3 on every use, so something done every T seconds settles between T/2 and 1.5 T.
+
+Changing the observations means retraining from scratch. `Boss_v0` and `Boss_v1` were trained on the old 46-input
+set and cannot run on this agent.
 
 ## Rewards
 
@@ -95,6 +111,10 @@ next episode starts a new fight (both fighters back on their spawn points at ful
 cooldowns, stun, and shots still in flight. It also calls the opponent's `PlayerBody.Reset()`, so a player that died
 comes back. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
 
+That is with the arena's Auto Restart off, as in `TrainingArena`. With Auto Restart on (`Agent_Play`, `Arena2`) the
+agent leaves the restart to the arena: the boss stands still while the result shows, and the reset above happens when
+the arena starts the next round after its Reset Delay (5 s).
+
 ## Watching the boss, or steering it by hand
 
 Open `Scenes/Agent_Boss.unity` and press Play to watch the trained boss fight the PlayerBot. To steer the boss
@@ -111,14 +131,17 @@ reward so far.
 |---|---|---|---|
 | `boss_v0` | first-pass frame data, 609k steps | 75% to 100% | 10.6 s |
 | `boss_v1` | slower windups and cooldowns, 1 s attack gap, double player damage, 2M steps | 79% to 100% | 16.0 s |
+| `boss_v2` | v2 observations (0.15 s reaction delay, player habits, boss shot), bot deciding every physics step, 2M steps | 2% to 100% | 29.4 s |
 
-Both runs beat the default bot almost every time within 200k steps, so the bot is now the limit on what the boss can
-learn. A harder or varied bot (T12) is the next big improvement.
+boss_v0 and boss_v1 beat the default bot almost every time within 200k steps: that bot only decided about 3 times
+per game second at training speed. Once it decided every physics step (T12) it became a real opponent. boss_v2 started
+out losing or drawing almost every fight, passed 50% wins at 340k steps and 99% at 1.1M, and its fights stay about
+twice as long as v1's. Rates are averages over the first and last 100k steps.
 
 ## Playing against a trained boss
 
 Open `Scenes/Agent_Play.unity` and press Play, with no trainer running. WASD moves, J or left click is the light
-attack, K or right click the heavy, Space rolls. A new round starts as soon as one ends, and the overlay shows the
+attack, K or right click the heavy, Space rolls. The next round starts 5 s after one ends, and the overlay shows the
 round clock, both healths and what the boss picks.
 
 To try another model, copy its `.onnx` from `results/<run-id>/` (or a checkpoint from `results/<run-id>/Boss/`) into

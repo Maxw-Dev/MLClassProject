@@ -39,3 +39,4 @@ behaviors:
 #   damage_dealt_reward: 0.5
 #   damage_taken_penalty: 0.5
 #   time_penalty_per_second: 0.0
+#   reaction_delay: 0.15
