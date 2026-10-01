@@ -158,7 +158,7 @@ namespace BossFight.Arena
             IsFightActive = true;
 
             SetText(roundText, $"ROUND {CurrentRound}");
-            // StartCoroutine(ShowBanner(fightStartText, fightStartTextDuration));
+            StartCoroutine(ShowBanner(fightStartText, fightStartTextDuration));
         }
 
         // Back on the spawn point at full health and stamina, with any swing in progress cut short.

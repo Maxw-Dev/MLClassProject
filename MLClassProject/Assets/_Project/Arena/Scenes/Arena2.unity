@@ -235,10 +235,6 @@ PrefabInstance:
       propertyPath: fightStartText
       value: 
       objectReference: {fileID: 1593156581}
-    - target: {fileID: 4524026698547203982, guid: 3399980a36f73d64a803071076db6544, type: 3}
-      propertyPath: fightStartTextDuration
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5738534648755648705, guid: 3399980a36f73d64a803071076db6544, type: 3}
       propertyPath: m_LocalPosition.x
       value: 11.52
@@ -823,10 +819,6 @@ PrefabInstance:
       propertyPath: target
       value: 
       objectReference: {fileID: 479510969}
-    - target: {fileID: 8727441688743932896, guid: 4df63dee3ff5446aab0b9b3816ac8d1a, type: 3}
-      propertyPath: max
-      value: 50
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
