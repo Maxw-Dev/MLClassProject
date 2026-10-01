@@ -333,7 +333,7 @@ MonoBehaviour:
   boss: {fileID: 387246135}
   arenaCenter: {fileID: 1465523978}
   arenaHalfSize: 19
-  decisionPeriod: 2
+  decisionPeriod: 5
   reactionDelay: 0.15
   humanInput: {fileID: 1634886658}
   winReward: 1
@@ -434,8 +434,8 @@ MonoBehaviour:
     VectorObservationSize: 39
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 2
-      BranchSizes: 0300000002000000i
+      m_NumContinuousActions: 0
+      BranchSizes: 090000000300000002000000i
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
@@ -664,8 +664,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.ML-Agents::Unity.MLAgents.Demonstrations.DemonstrationRecorder
   Record: 1
   NumStepsToRecord: 0
-  DemonstrationName: player
-  DemonstrationDirectory: ../demos/player
+  DemonstrationName: max
+  DemonstrationDirectory: ../demos/max
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

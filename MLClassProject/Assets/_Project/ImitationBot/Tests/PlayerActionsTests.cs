@@ -10,6 +10,12 @@ namespace BossFight.ImitationBot.Tests
         static void EastFrame(out Vector3 forward, out Vector3 right) =>
             PlayerActions.Frame(Vector3.zero, new Vector3(5f, 1.2f, 0f), out forward, out right);
 
+        static PlayerActions.Move Walking(Vector3 move)
+        {
+            EastFrame(out var forward, out var right);
+            return PlayerActions.FromIntent(new Intent { Move = move }, forward, right).Walk;
+        }
+
         [Test]
         public void TheFrameLooksAtTheBossOnTheFloor()
         {
@@ -27,20 +33,34 @@ namespace BossFight.ImitationBot.Tests
         }
 
         [Test]
-        public void WalkingAtTheBossIsTowardOne()
+        public void WalkingIsTheNearestOfEightDirectionsAroundTheBoss()
         {
-            EastFrame(out var forward, out var right);
-            var actions = PlayerActions.FromIntent(new Intent { Move = Vector3.right }, forward, right);
-            Assert.AreEqual(1f, actions.Toward, 0.0001f);
-            Assert.AreEqual(0f, actions.Right, 0.0001f);
+            Assert.AreEqual(PlayerActions.Move.Toward, Walking(Vector3.right));
+            Assert.AreEqual(PlayerActions.Move.Away, Walking(Vector3.left));
+            Assert.AreEqual(PlayerActions.Move.Right, Walking(Vector3.back), "circling keeps its side wherever the boss is");
+            Assert.AreEqual(PlayerActions.Move.Left, Walking(Vector3.forward));
+            Assert.AreEqual(PlayerActions.Move.TowardRight, Walking(new Vector3(1f, 0f, -1f).normalized));
+            Assert.AreEqual(PlayerActions.Move.AwayLeft, Walking(new Vector3(-1f, 0f, 1f).normalized));
+            Assert.AreEqual(PlayerActions.Move.TowardLeft, Walking(new Vector3(0.6f, 0f, 0.8f)), "53 degrees left rounds to 45");
         }
 
         [Test]
-        public void CirclingKeepsItsSideWhereverTheBossIs()
+        public void ASmallNudgeIsStandingStill()
+        {
+            Assert.AreEqual(PlayerActions.Move.None, Walking(Vector3.zero));
+            Assert.AreEqual(PlayerActions.Move.None, Walking(new Vector3(0.1f, 0f, 0.1f)));
+        }
+
+        [Test]
+        public void EveryDirectionPlaysBackAsItself()
         {
             EastFrame(out var forward, out var right);
-            var actions = PlayerActions.FromIntent(new Intent { Move = Vector3.back }, forward, right);   // -z
-            Assert.AreEqual(1f, actions.Right, 0.0001f);
+            for (var walk = PlayerActions.Move.None; walk <= PlayerActions.Move.TowardLeft; walk++)
+            {
+                var played = new PlayerActions { Walk = walk }.ToIntent(forward, right);
+                Assert.AreEqual(walk, PlayerActions.FromIntent(played, forward, right).Walk);
+                Assert.AreEqual(walk == PlayerActions.Move.None ? 0f : 1f, played.Move.magnitude, 0.0001f, "always full speed");
+            }
         }
 
         [Test]
@@ -54,24 +74,15 @@ namespace BossFight.ImitationBot.Tests
         }
 
         [Test]
-        public void ARecordedIntentPlaysBackTheSame()
+        public void ARecordedIntentPlaysBackClose()
         {
             EastFrame(out var forward, out var right);
             var person = new Intent { Move = new Vector3(0.6f, 0f, 0.8f), HeavyAttack = true, Roll = true };
             var played = PlayerActions.FromIntent(person, forward, right).ToIntent(forward, right);
-            Assert.AreEqual(0.6f, played.Move.x, 0.0001f);
-            Assert.AreEqual(0.8f, played.Move.z, 0.0001f);
+            Assert.Less(Vector3.Angle(person.Move, played.Move), 22.6f, "within half a sector");
             Assert.IsTrue(played.HeavyAttack);
             Assert.IsFalse(played.LightAttack);
             Assert.IsTrue(played.Roll);
-        }
-
-        [Test]
-        public void MovementIsCappedLikeAStick()
-        {
-            EastFrame(out var forward, out var right);
-            var played = new PlayerActions { Toward = 1f, Right = 1f }.ToIntent(forward, right);
-            Assert.AreEqual(1f, played.Move.magnitude, 0.0001f);
         }
     }
 }

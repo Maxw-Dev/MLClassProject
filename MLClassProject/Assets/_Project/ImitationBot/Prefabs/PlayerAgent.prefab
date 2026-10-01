@@ -86,8 +86,8 @@ MonoBehaviour:
     VectorObservationSize: 39
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 2
-      BranchSizes: 0300000002000000i
+      m_NumContinuousActions: 0
+      BranchSizes: 090000000300000002000000i
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
@@ -121,7 +121,7 @@ MonoBehaviour:
   boss: {fileID: 0}
   arenaCenter: {fileID: 0}
   arenaHalfSize: 19
-  decisionPeriod: 2
+  decisionPeriod: 5
   reactionDelay: 0.15
   humanInput: {fileID: 0}
   winReward: 1

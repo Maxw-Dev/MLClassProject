@@ -38,12 +38,21 @@ left" means the same thing wherever the fight is.
 
 ## Actions
 
-- Two continuous: move toward the boss, and move right of the line to it. Longer than 1 is scaled back to 1, like a
-  stick.
-- Attack branch: none, light, heavy. Held until the next decision, like holding the button.
-- Roll branch: no, yes. A tap.
+Three choices each decision, all discrete:
 
-It decides every 2 physics steps (0.04 s) and repeats the last action in between.
+- Walk (9): stand still, or one of 8 directions around the boss (toward, toward-right, right, away-right, away,
+  away-left, left, toward-left), always at full speed like a keyboard. A person's movement is recorded as the nearest
+  of the 8.
+- Attack (3): none, light, heavy. Held until the next decision, like holding the button.
+- Roll (2): no, yes. A tap.
+
+It decides every 5 physics steps (0.1 s, like the boss) and repeats the last action in between. Presses between two
+decisions are still recorded.
+
+Why walking is a choice and not two numbers: the first bot (`max_v0`) had movement as two numbers. Learning from
+recordings, two numbers become the average of what people did, and the average of "walk in" and "back off" is
+"barely move". It moved at about a quarter of the recorded speed, and the random noise ML-Agents adds to numbers
+during play made it stutter. A choice picks one direction and moves at full speed.
 
 **Changing what the agent sees or does makes every recording useless**, because recordings store exactly these
 numbers. Settle any change before we record.
@@ -59,7 +68,8 @@ numbers. Settle any change before we record.
 4. Aim for 10 to 15 minutes per person over a few sessions. Play how you normally would, including losing.
 5. Untick Record before you play just for testing, or delete the extra files.
 
-Commit your `demos/<name>/` folder.
+Commit your `demos/<name>/` folder. Recordings made before the walk change (1 October, `max_v0`) no longer load:
+delete them.
 
 ## Training (once there are recordings)
 
@@ -72,4 +82,5 @@ uv run mlagents-learn config/imitation.yaml --run-id=player_v0
 `demo_path` in the config (both places) picks the recordings: one person's folder trains a bot of that person,
 `demos` trains on everyone. In TensorBoard, `Player/WinRate` and `Player/FightLength` show how it fights the boss, and
 the GAIL reward shows how much it still looks like the recordings. The model lands in `results/<run-id>/Player.onnx`.
-To watch it, put that model on a PlayerAgent with Behavior Type Inference Only.
+To watch it, put that model on a PlayerAgent with Behavior Type Inference Only and tick Deterministic Inference, so
+it always takes its most likely choice instead of a random draw.

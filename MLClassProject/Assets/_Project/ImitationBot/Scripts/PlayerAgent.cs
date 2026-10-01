@@ -54,8 +54,8 @@ namespace BossFight.ImitationBot
         [SerializeField, Min(1f)] float arenaHalfSize = 19f;
 
         [Header("Deciding")]
-        [Tooltip("Physics steps between decisions. 2: every 0.04 s. The last action is repeated in between.")]
-        [SerializeField, Min(1)] int decisionPeriod = 2;
+        [Tooltip("Physics steps between decisions. 5: every 0.1 s, like the boss. The last action is repeated in between.")]
+        [SerializeField, Min(1)] int decisionPeriod = 5;
         [Tooltip("Seconds late the agent sees the boss, like a person's reaction time.")]
         [SerializeField, Range(0f, DelayLine<BossSighting>.MaxDelay)] float reactionDelay = 0.15f;
 
@@ -229,14 +229,12 @@ namespace BossFight.ImitationBot
 
         public override void OnActionReceived(ActionBuffers actions)
         {
-            var continuous = actions.ContinuousActions;
             var discrete = actions.DiscreteActions;
             var chosen = new PlayerActions
             {
-                Toward = continuous[0],
-                Right = continuous[1],
-                Button = (PlayerActions.Attack)Mathf.Clamp(discrete[0], 0, 2),
-                Roll = discrete[1] == 1,
+                Walk = (PlayerActions.Move)Mathf.Clamp(discrete[0], 0, PlayerActions.BranchSizes[0] - 1),
+                Button = (PlayerActions.Attack)Mathf.Clamp(discrete[1], 0, PlayerActions.BranchSizes[1] - 1),
+                Roll = discrete[2] == 1,
             };
             LastActions = chosen;
             intent = waitingForArena ? default : chosen.ToIntent(decisionForward, decisionRight);
@@ -251,12 +249,10 @@ namespace BossFight.ImitationBot
             pressed.Roll |= tappedRoll;
             ClearHeld();
             var asActions = PlayerActions.FromIntent(pressed, decisionForward, decisionRight);
-            var continuous = actionsOut.ContinuousActions;
-            continuous[0] = asActions.Toward;
-            continuous[1] = asActions.Right;
             var discrete = actionsOut.DiscreteActions;
-            discrete[0] = (int)asActions.Button;
-            discrete[1] = asActions.Roll ? 1 : 0;
+            discrete[0] = (int)asActions.Walk;
+            discrete[1] = (int)asActions.Button;
+            discrete[2] = asActions.Roll ? 1 : 0;
         }
 
         /// <summary>The player's intent. A person drives directly while recording, the agent's choice otherwise.</summary>
