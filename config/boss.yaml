@@ -27,7 +27,10 @@ behaviors:
     checkpoint_interval: 200000
     summary_freq: 20000
 
-# Reward weights. Uncomment any of these to try other values for one run, no new build needed.
+# Reward weights. To try other values for one run (no new build needed), uncomment the environment_parameters: line
+# plus the values you want to change. environment_parameters: stays at the left edge, like behaviors:, and each value
+# has two spaces in front. Easiest: select this block and press Cmd+/ (Ctrl+/ on Windows). Lines left commented keep
+# the value set on the BossAgent prefab.
 # environment_parameters:
 #   win_reward: 1.0
 #   win_time_decay: 0.5
