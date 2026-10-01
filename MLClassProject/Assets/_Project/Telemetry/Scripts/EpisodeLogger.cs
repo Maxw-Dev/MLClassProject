@@ -11,8 +11,15 @@ namespace BossFight.telemetryLogger
     public class EpisodeLogger : MonoBehaviour
     {
         /// <summary>Arena FightManager for passing fight end details</summary>
-        [SerializeField] private FightManager m_fightManager;
-        /// <summary></summary>
+        [SerializeField] private FightManager m_fightManager;  
+
+        /// <summary>
+        /// name of the log file
+        /// </summary>
+        [SerializeField] private string logName = "log";
+        [SerializeField][Tooltip("Produce log every x rounds")] private int logFrequency = 10;
+        private long roundCounter = 0;
+
         void OnEnable()
         {
             if (m_fightManager == null)
@@ -34,19 +41,25 @@ namespace BossFight.telemetryLogger
         /// policy version, outcome, duration, damage dealt and taken, who was fighting.
         /// </summary>
         /// <param name="winner">The winner of the battle</param>
-        public void LogEpisode(GameObject player, GameObject boss, bool bossWon, float roundDuration) {
-            Debug.Log(player.name);
+        public void LogEpisode(GameObject boss, GameObject player, bool bossWon, float roundDuration) {
+            // Debug.Log("Player: " + player.name);
+            // Debug.Log("Boss: " + boss.name);
+            Debug.Log("Round: " + roundCounter + ", " + roundCounter % logFrequency);
+            if (roundCounter % logFrequency != 0)
+            {
+                roundCounter++;
+                return;
+            }
             PlayerInfo playerInfo = player.GetComponent<PlayerInfo>();
-            Debug.Log(playerInfo);
             Health bossHealth = boss?.GetComponent<Health>();
             float damageTaken = bossHealth.Max - bossHealth.Current;
             float damageDealt = playerInfo.GetHealthMax() - playerInfo.GetHealth();
             
-            int policyVer = 0; // Temp; needs to be provided from  
+            long policyVer = roundCounter; // Temp; needs to be provided from  
             string playerName = player.GetComponent<PlayerInfo>().GetBehaviorSource();
             
             string path = Application.persistentDataPath + "/Episode Logs/";
-            string fileName = "log.csv";
+            string fileName = logName + ".csv";
             string filePath = path + fileName;
             string newLogDetails = String.Format("{0},{1},{2},{3},{4},{5}\n", policyVer, bossWon, roundDuration, damageDealt, damageTaken, playerName);
 
@@ -59,6 +72,7 @@ namespace BossFight.telemetryLogger
             }
             File.AppendAllText(filePath, newLogDetails);
             Debug.Log("Data appended to csv:\n" + newLogDetails);
+            roundCounter++;
         }
     }
 

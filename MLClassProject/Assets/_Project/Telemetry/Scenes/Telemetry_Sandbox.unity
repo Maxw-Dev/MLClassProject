@@ -788,6 +788,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
   m_fightManager: {fileID: 562533958}
+  logName: logtest2
+  logFrequency: 1
 --- !u!4 &785489747
 Transform:
   m_ObjectHideFlags: 0

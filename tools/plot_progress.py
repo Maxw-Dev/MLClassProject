@@ -1,18 +1,32 @@
 # Get user input for file path (defaults to (display windows default, using locallow environment variable))
-import os
 import csv
+import sys
+from pathlib import Path
 import pandas as pd # type: ignore
 import matplotlib.pyplot as mp # type: ignore
 
-filepath = os.getenv('LOCALAPPDATA') + "\\..\\LocalLow\\DefaultCompany\\MLClassProject\\Episode Logs\\log.csv"
-print("Enter A path for the log or use the default: " + filepath)
+filepath = ""
+if (sys.platform == "win32"):
+    fileDir = Path.home() / 'Appdata' / 'LocalLow'
+elif (sys.platform == darwin):
+    fileDir = Path.home() / 'Library' / 'Application Support'
+else:
+    fileDir = Path.home() / '.config' / 'unity3d'
+fileDir = fileDir / "DefaultCompany" / "MLClassProject" / "Episode Logs"
+fileName = "log.csv"
+filePath = fileDir / fileName
+print("Enter A log name (e.g. log.csv), full log path, or use the default path:\n" + str(filePath))
 usrInput = input()
 if usrInput != "":
-    filepath = usrInput
+    if (usrInput.find("/") != -1 or usrInput.find("\\") != -1):
+        filePath = usrInput
+    else: 
+        fileName = usrInput
+        filePath = fileDir / fileName
 
 # data to be plotted
 data = []
-with open(filepath, "r") as f:
+with open(filePath, "r") as f:
     csv = csv.DictReader(f)
     for row in csv:
         data.append([(row['Policy Version']), float(row["Fight Duration (s)"]), float(row["Damage Dealt"])])
