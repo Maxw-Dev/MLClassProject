@@ -15,6 +15,10 @@ opponent for boss training, and a way to compare how each of us plays.
 - `Scripts/DelayLine.cs`: keeps the last half second of boss sightings, for the reaction delay. Tested in `Tests/`.
 - `Scenes/Imitation_Record.unity`: `Agent_Play` (you vs Boss_v2) with the agent and a Demonstration Recorder on the
   player.
+- `Prefabs/PlayerAgent.prefab`: Player variant for training and playing the bot. The keyboard input is removed and
+  Behavior Parameters (`Player`, Behavior Type Default) and `PlayerAgent` are added.
+- `Scenes/Imitation_Train.unity`: `Agent_Train`'s eight arenas, each with a PlayerAgent where the PlayerBot was and the
+  boss on Inference Only with Boss_v2. The boss starts every fight (Auto Restart off), so only `Player` trains.
 - `config/imitation.yaml` (repo root): a first training config. Recordings go in `demos/` at the repo root.
 
 ## What the agent sees (39 floats, all about -1..1)
@@ -59,11 +63,13 @@ Commit your `demos/<name>/` folder.
 
 ## Training (once there are recordings)
 
-Needs a training scene with many arenas, each pairing a PlayerAgent with no Human Input against a BossAgent on
-Inference Only (Boss_v2). That scene is next on this branch. Then, from the repo root:
+From the repo root, then press Play in `Scenes/Imitation_Train.unity`:
 
 ```
 uv run mlagents-learn config/imitation.yaml --run-id=player_v0
 ```
 
-Point `demo_path` at one person's folder to train a bot of that person.
+`demo_path` in the config (both places) picks the recordings: one person's folder trains a bot of that person,
+`demos` trains on everyone. In TensorBoard, `Player/WinRate` and `Player/FightLength` show how it fights the boss, and
+the GAIL reward shows how much it still looks like the recordings. The model lands in `results/<run-id>/Player.onnx`.
+To watch it, put that model on a PlayerAgent with Behavior Type Inference Only.
