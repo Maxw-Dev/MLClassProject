@@ -16,8 +16,9 @@ namespace BossFight.RL
     /// <summary>
     /// The boss's brain. Each decision it picks one <see cref="BossMove"/> (one discrete branch, masked by
     /// <see cref="BossBody.CanPerform"/>) and is rewarded for damage and for winning. When its arena's fight ends the
-    /// episode ends, and the next episode starts a new fight, so the arena's <see cref="FightManager"/> must have
-    /// Auto Restart off. Lives on <c>Agent/Prefabs/BossAgent.prefab</c> next to Behavior Parameters and a Decision
+    /// episode ends. With the arena's <see cref="FightManager"/> Auto Restart off (training) the next episode starts a
+    /// new fight straight away. With it on (play scenes) the boss stands still until the arena starts the next round
+    /// after its reset delay. Lives on <c>Agent/Prefabs/BossAgent.prefab</c> next to Behavior Parameters and a Decision
     /// Requester. Observations, rewards and the episode loop are described in Agent/README.md.
     /// </summary>
     [RequireComponent(typeof(BossBody))]
@@ -44,7 +45,7 @@ namespace BossFight.RL
             + 3;                                 // the arena
 
         [Header("Arena")]
-        [Tooltip("This arena's FightManager, with Auto Restart off: the agent starts every fight.")]
+        [Tooltip("This arena's FightManager. Auto Restart off (training): the agent starts every fight. On (play scenes): the agent waits for the arena's next round.")]
         [SerializeField] FightManager arena;
         [Tooltip("The other fighter in this arena. Needs a Health on its root.")]
         [SerializeField] GameObject opponent;
@@ -93,6 +94,7 @@ namespace BossFight.RL
         float fightStartedAt;
         BossMove heldAttack;
         bool fightOver;
+        bool waitingForArena;   // between rounds in a play scene, until the arena starts the next one
         bool firstEpisode = true;
         string outcome;
         float bossHealthSeen, opponentHealthSeen;   // health after the last hit, so only damage that comes off the bar counts
@@ -172,13 +174,25 @@ namespace BossFight.RL
 
             fightOver = false;
             heldAttack = BossMove.None;
-            if (arena != null)
+            if (arena != null && arena.AutoRestart)
             {
-                // The arena starts its first fight by itself in Start. Every fight after that starts here.
-                if (!firstEpisode || !arena.IsFightActive) arena.StartNewFight();
-                roundLength = Mathf.Max(arena.TimeRemaining, 0.01f);
+                // A play scene: the arena shows the result and starts the next round by itself after its reset delay.
+                // Stand still until then (FixedUpdate watches for it).
+                waitingForArena = !arena.IsFightActive;
+                firstEpisode = false;
+                if (!waitingForArena) BeginFight();
+                return;
             }
+            // Training: the arena starts its first fight by itself in Start. Every fight after that starts here.
+            if (arena != null && (!firstEpisode || !arena.IsFightActive)) arena.StartNewFight();
             firstEpisode = false;
+            BeginFight();
+        }
+
+        // Everything a new fight needs once the arena has reset it.
+        void BeginFight()
+        {
+            if (arena != null) roundLength = Mathf.Max(arena.TimeRemaining, 0.01f);
             // The arena refills health and moves the fighters. A player that died last fight also needs its own reset
             // to come back to life. FightManager does that too since T11, and a second reset does no harm.
             if (opponentBody != null) opponentBody.Reset();
@@ -273,14 +287,15 @@ namespace BossFight.RL
         public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
             // AllMoves[0] is None, which stays allowed so there is always a legal choice, even when dead.
+            // Between rounds of a play scene None is the only choice.
             for (int i = 1; i < AllMoves.Length; i++)
-                actionMask.SetActionEnabled(0, i, body.CanPerform(AllMoves[i]));
+                actionMask.SetActionEnabled(0, i, !waitingForArena && body.CanPerform(AllMoves[i]));
         }
 
         public override void OnActionReceived(ActionBuffers actions)
         {
             int choice = actions.DiscreteActions[0];
-            LastMove = choice >= 0 && choice < AllMoves.Length ? AllMoves[choice] : BossMove.None;
+            LastMove = !waitingForArena && choice >= 0 && choice < AllMoves.Length ? AllMoves[choice] : BossMove.None;
             body.TryPerform(LastMove);
         }
 
@@ -308,8 +323,14 @@ namespace BossFight.RL
             {
                 fightOver = false;
                 LastResult = $"{outcome}, episode reward {GetCumulativeReward():+0.00;-0.00}";
-                EndEpisode();   // OnEpisodeBegin starts the next fight
+                EndEpisode();   // OnEpisodeBegin starts the next fight, or waits for the arena to
                 return;
+            }
+            if (waitingForArena)
+            {
+                if (arena == null || !arena.IsFightActive) return;   // still between rounds
+                waitingForArena = false;
+                BeginFight();
             }
             RecordOpponent();
             if (arena != null && arena.IsFightActive) AddReward(-perSecond * Time.fixedDeltaTime);

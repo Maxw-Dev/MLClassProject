@@ -111,6 +111,10 @@ next episode starts a new fight (both fighters back on their spawn points at ful
 cooldowns, stun, and shots still in flight. It also calls the opponent's `PlayerBody.Reset()`, so a player that died
 comes back. TensorBoard gets `Fight/BossWinRate`, `Fight/DrawRate` and `Fight/Length`.
 
+That is with the arena's Auto Restart off, as in `TrainingArena`. With Auto Restart on (`Agent_Play`, `Arena2`) the
+agent leaves the restart to the arena: the boss stands still while the result shows, and the reset above happens when
+the arena starts the next round after its Reset Delay (5 s).
+
 ## Watching the boss, or steering it by hand
 
 Open `Scenes/Agent_Boss.unity` and press Play to watch the trained boss fight the PlayerBot. To steer the boss
@@ -137,7 +141,7 @@ twice as long as v1's. Rates are averages over the first and last 100k steps.
 ## Playing against a trained boss
 
 Open `Scenes/Agent_Play.unity` and press Play, with no trainer running. WASD moves, J or left click is the light
-attack, K or right click the heavy, Space rolls. A new round starts as soon as one ends, and the overlay shows the
+attack, K or right click the heavy, Space rolls. The next round starts 5 s after one ends, and the overlay shows the
 round clock, both healths and what the boss picks.
 
 To try another model, copy its `.onnx` from `results/<run-id>/` (or a checkpoint from `results/<run-id>/Boss/`) into
