@@ -37,9 +37,11 @@ namespace BossFight.RL
         /// <summary>Floats written by <see cref="CollectObservations"/>. Behavior Parameters needs this Vector Observation size.</summary>
         public static readonly int ObservationSize =
             (1 + StateCount + (AttackMoves.Length + 1) + PhaseCount + 1 + AttackMoves.Length + 1 + (LocomotionMoves.Length + 1))  // the boss
-            + 7                   // where the opponent is
-            + (5 + PhaseCount)    // what the opponent is doing
-            + 3;                  // the arena
+            + 7                                  // where the opponent is
+            + (5 + PhaseCount)                   // what the opponent is doing
+            + 2 * OpponentMemory.HabitCount      // the opponent's habits
+            + 3                                  // the boss's shot
+            + 3;                                 // the arena
 
         [Header("Arena")]
         [Tooltip("This arena's FightManager, with Auto Restart off: the agent starts every fight.")]
@@ -50,6 +52,12 @@ namespace BossFight.RL
         [SerializeField] Transform arenaCenter;
         [Tooltip("Meters from the middle of the arena to a wall. Positions and distances are scaled by it.")]
         [SerializeField, Min(1f)] float arenaHalfSize = 19f;
+
+        [Header("Seeing the opponent")]
+        [Tooltip("Seconds late the boss sees everything about its opponent, like a person's reaction time. reaction_delay in the trainer config overrides it.")]
+        [SerializeField, Range(0f, OpponentMemory.MaxDelay)] float reactionDelay = 0.15f;
+        [Tooltip("The opponent's heavy attack, to tell it apart from its light attack in the habit observations.")]
+        [SerializeField] AttackData opponentHeavyAttack;
 
         [Header("Rewards (environment_parameters in the trainer config override these)")]
         [Tooltip("Earned for a win at the very start of a round. Later wins earn less, see Win Time Decay.")]
@@ -78,11 +86,11 @@ namespace BossFight.RL
         AttackRunner opponentRunner;
         PlayerBody opponentBody;
         IIntentSource keyboard;
+        OpponentMemory memory;
+        float delay;
         float maxStun = 0.01f;
         float roundLength = 1f;
         float fightStartedAt;
-        Vector3 lastOpponentPosition;
-        float lastObservedAt;
         BossMove heldAttack;
         bool fightOver;
         bool firstEpisode = true;
@@ -110,6 +118,7 @@ namespace BossFight.RL
                 opponentBody = opponent.GetComponent<PlayerBody>();
             }
             keyboard = heuristicInput as IIntentSource;
+            memory = new OpponentMemory(Time.fixedDeltaTime);
             bossHealthSeen = health.Current;
             opponentHealthSeen = opponentHealth != null ? opponentHealth.Current : 0f;
             foreach (var move in body.Moves)
@@ -119,6 +128,8 @@ namespace BossFight.RL
                 Debug.LogError($"{name}: set Arena and an Opponent with a Health on this BossAgent (it belongs in an arena).", this);
             if (heuristicInput != null && keyboard == null)
                 Debug.LogWarning($"{name}: Heuristic Input is not an IIntentSource, hand play will stand still.", this);
+            if (opponentRunner != null && opponentHeavyAttack == null)
+                Debug.LogWarning($"{name}: set Opponent Heavy Attack, or every opponent attack counts as a light one in its habits.", this);
             var brain = GetComponent<BehaviorParameters>().BrainParameters;
             if (brain.VectorObservationSize != ObservationSize)
                 Debug.LogError($"{name}: Behavior Parameters has Vector Observation Space Size {brain.VectorObservationSize}, BossAgent writes {ObservationSize}.", this);
@@ -133,6 +144,8 @@ namespace BossFight.RL
             if (arena != null) arena.FightEnded += OnFightEnded;
             if (health != null) health.Damaged += OnDamaged;
             if (opponentHealth != null) opponentHealth.Damaged += OnOpponentDamaged;
+            if (opponentHealth != null) opponentHealth.InvulnerabilityGranted += OnOpponentRolled;
+            if (opponentRunner != null) opponentRunner.PhaseChanged += OnOpponentPhaseChanged;
         }
 
         protected override void OnDisable()
@@ -140,6 +153,8 @@ namespace BossFight.RL
             if (arena != null) arena.FightEnded -= OnFightEnded;
             if (health != null) health.Damaged -= OnDamaged;
             if (opponentHealth != null) opponentHealth.Damaged -= OnOpponentDamaged;
+            if (opponentHealth != null) opponentHealth.InvulnerabilityGranted -= OnOpponentRolled;
+            if (opponentRunner != null) opponentRunner.PhaseChanged -= OnOpponentPhaseChanged;
             base.OnDisable();
         }
 
@@ -153,6 +168,7 @@ namespace BossFight.RL
             dealt = parameters.GetWithDefault("damage_dealt_reward", damageDealtReward);
             taken = parameters.GetWithDefault("damage_taken_penalty", damageTakenPenalty);
             perSecond = parameters.GetWithDefault("time_penalty_per_second", timePenaltyPerSecond);
+            delay = Mathf.Clamp(parameters.GetWithDefault("reaction_delay", reactionDelay), 0f, OpponentMemory.MaxDelay);
 
             fightOver = false;
             heldAttack = BossMove.None;
@@ -164,14 +180,14 @@ namespace BossFight.RL
             }
             firstEpisode = false;
             // The arena refills health and moves the fighters. A player that died last fight also needs its own reset
-            // to come back to life, which FightManager does not do yet.
+            // to come back to life. FightManager does that too since T11, and a second reset does no harm.
             if (opponentBody != null) opponentBody.Reset();
             body.ResetForEpisode();   // after the arena's reset, which starts a cooldown when it cuts a swing short
             if (opponent != null) body.Target = opponent.transform;
             Physics.SyncTransforms();   // a CharacterController ignores a teleport until physics has seen it
             fightStartedAt = Time.time;
-            lastObservedAt = Time.time;
-            lastOpponentPosition = opponent != null ? opponent.transform.position : transform.position;
+            memory.Clear();   // nothing from the last fight, not even the opponent's habits
+            RecordOpponent();
             bossHealthSeen = health.Current;
             opponentHealthSeen = opponentHealth != null ? opponentHealth.Current : 0f;
         }
@@ -198,31 +214,53 @@ namespace BossFight.RL
             sensor.AddObservation(Mathf.Clamp01(body.StunRemaining / maxStun));
             sensor.AddOneHotObservation(Array.IndexOf(LocomotionMoves, body.Locomotion) + 1, LocomotionMoves.Length + 1);
 
+            // Everything about the opponent is as it was Reaction Delay seconds ago
+            RecordOpponent();
+            var seen = memory.Seen(Time.fixedTime - delay);
+
             // Where the opponent is, in the boss's frame
             var here = transform.position;
-            var there = opponent.transform.position;
-            var toOpponent = there - here;
+            var toOpponent = seen.Position - here;
             toOpponent.y = 0f;
             float distance = toOpponent.magnitude;
             var towardOpponent = distance > 0.001f ? toOpponent / distance : transform.forward;
             sensor.AddObservation(Mathf.Clamp01(distance / (2f * arenaHalfSize)));
             sensor.AddObservation(Flat(transform.InverseTransformDirection(towardOpponent)));
-            sensor.AddObservation(Flat(transform.InverseTransformDirection(opponent.transform.forward)));
-            float elapsed = Time.time - lastObservedAt;
-            var velocity = elapsed > 0.0001f ? (there - lastOpponentPosition) / elapsed : Vector3.zero;
-            lastOpponentPosition = there;
-            lastObservedAt = Time.time;
-            sensor.AddObservation(Vector2.ClampMagnitude(Flat(transform.InverseTransformDirection(velocity)) / MaxOpponentSpeed, 1f));
+            sensor.AddObservation(Flat(transform.InverseTransformDirection(seen.Forward)));
+            sensor.AddObservation(Vector2.ClampMagnitude(Flat(transform.InverseTransformDirection(seen.Velocity)) / MaxOpponentSpeed, 1f));
 
             // What the opponent is doing
-            sensor.AddObservation(opponentHealth.Normalized);
-            sensor.AddObservation(opponentStamina != null ? opponentStamina.Normalized : 0f);
-            var phase = opponentRunner != null ? opponentRunner.Phase : AttackPhase.Idle;
-            var swing = opponentRunner != null ? opponentRunner.CurrentAttack : null;
-            sensor.AddOneHotObservation((int)phase, PhaseCount);
-            sensor.AddObservation(Progress(swing, phase, opponentRunner != null ? opponentRunner.TimeInPhase : 0f));
-            sensor.AddObservation(swing != null ? Mathf.Clamp01(swing.Damage / MaxAttackDamage) : 0f);
-            sensor.AddObservation(opponentHealth.IsInvulnerable);
+            sensor.AddObservation(seen.Health);
+            sensor.AddObservation(seen.Stamina);
+            sensor.AddOneHotObservation((int)seen.Phase, PhaseCount);
+            sensor.AddObservation(seen.PhaseProgress);
+            sensor.AddObservation(Mathf.Clamp01(seen.AttackDamage / MaxAttackDamage));
+            sensor.AddObservation(seen.Invulnerable);
+
+            // The opponent's habits: seconds since its last roll, light attack and heavy attack, then the usual gap
+            // between uses of each (lower: it does that more often)
+            for (int i = 0; i < OpponentMemory.HabitCount; i++)
+                sensor.AddObservation(Mathf.Clamp01(seen.SinceLast((OpponentMemory.Habit)i) / OpponentMemory.NeverUsed));
+            for (int i = 0; i < OpponentMemory.HabitCount; i++)
+                sensor.AddObservation(Mathf.Clamp01(seen.UsualGap((OpponentMemory.Habit)i) / OpponentMemory.NeverUsed));
+
+            // The boss's own shot nearest the opponent: is one flying, how far from them, is it heading at them
+            BossProjectile shot = null;
+            float shotDistance = float.MaxValue;
+            foreach (var projectile in body.Projectiles)
+            {
+                if (projectile == null) continue;
+                var toTarget = seen.Position - projectile.transform.position;
+                toTarget.y = 0f;
+                if (toTarget.magnitude < shotDistance)
+                {
+                    shot = projectile;
+                    shotDistance = toTarget.magnitude;
+                }
+            }
+            sensor.AddObservation(shot != null);
+            sensor.AddObservation(shot != null ? Mathf.Clamp01(shotDistance / (2f * arenaHalfSize)) : 0f);
+            sensor.AddObservation(shot != null ? Heading(shot, seen.Position) : 0f);
 
             // The arena: where the boss stands, sideways and along the line to the opponent, then the round clock
             var fromCenter = arenaCenter != null ? here - arenaCenter.position : Vector3.zero;
@@ -273,6 +311,7 @@ namespace BossFight.RL
                 EndEpisode();   // OnEpisodeBegin starts the next fight
                 return;
             }
+            RecordOpponent();
             if (arena != null && arena.IsFightActive) AddReward(-perSecond * Time.fixedDeltaTime);
             // Remember an attack key between decisions, so a quick tap is not lost in the 0.1 s gap.
             if (keyboard != null && heldAttack == BossMove.None) heldAttack = RequestedAttack(keyboard.GetIntent());
@@ -310,6 +349,47 @@ namespace BossFight.RL
             float lost = opponentHealthSeen - opponentHealth.Current;
             opponentHealthSeen = opponentHealth.Current;
             if (lost > 0f && hit.Source == gameObject) AddReward(dealt * lost / opponentHealth.Max);
+        }
+
+        // Only a roll grants the player i-frames.
+        void OnOpponentRolled(float seconds) => memory?.Used(OpponentMemory.Habit.Roll);
+
+        void OnOpponentPhaseChanged(AttackData attack, AttackPhase phase)
+        {
+            // Every attack starts with its windup.
+            if (phase != AttackPhase.Windup || memory == null) return;
+            memory.Used(attack == opponentHeavyAttack ? OpponentMemory.Habit.HeavyAttack : OpponentMemory.Habit.LightAttack);
+        }
+
+        // One sighting per physics step, the source of everything the boss observes about its opponent.
+        void RecordOpponent()
+        {
+            if (memory == null || opponentHealth == null || memory.Has(Time.fixedTime)) return;
+            var phase = opponentRunner != null ? opponentRunner.Phase : AttackPhase.Idle;
+            var swing = opponentRunner != null ? opponentRunner.CurrentAttack : null;
+            memory.Record(new OpponentMemory.Sighting
+            {
+                Time = Time.fixedTime,
+                Position = opponent.transform.position,
+                Forward = opponent.transform.forward,
+                Health = opponentHealth.Normalized,
+                Stamina = opponentStamina != null ? opponentStamina.Normalized : 0f,
+                Phase = phase,
+                PhaseProgress = Progress(swing, phase, opponentRunner != null ? opponentRunner.TimeInPhase : 0f),
+                AttackDamage = swing != null ? swing.Damage : 0f,
+                Invulnerable = opponentHealth.IsInvulnerable,
+            });
+        }
+
+        // 1 when the shot is flying straight at the point, -1 when straight away from it.
+        static float Heading(BossProjectile shot, Vector3 point)
+        {
+            var toPoint = point - shot.transform.position;
+            var direction = shot.Direction;
+            toPoint.y = 0f;
+            direction.y = 0f;
+            if (toPoint.sqrMagnitude < 0.0001f || direction.sqrMagnitude < 0.0001f) return 0f;
+            return Vector3.Dot(direction.normalized, toPoint.normalized);
         }
 
         // The first attack whose key is down and that can start now.

@@ -6,7 +6,9 @@ time out lives in Boss; this folder only decides.
 ## What is here
 
 - `Scripts/BossAgent.cs`: the Agent. Observations, action mask, rewards, episode loop.
-- `Prefabs/BossAgent.prefab`: Boss variant with Behavior Parameters (name `Boss`, 46 observations, one branch of 10),
+- `Scripts/OpponentMemory.cs`: what the boss has seen of its opponent, for the reaction delay and the habit
+  observations. Tested in `Tests/OpponentMemoryTests.cs`.
+- `Prefabs/BossAgent.prefab`: Boss variant with Behavior Parameters (name `Boss`, 55 observations, one branch of 10),
   a Decision Requester (every 5 physics steps, so 0.1 s) and the `BossAgent`.
 - `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2 and the PlayerBot (T12) is
   fighter 1, wired to each other rather than found by tag, so many arenas can run side by side. 8 m apart,
@@ -30,16 +32,29 @@ One discrete branch with one entry per `BossMove`: None, Advance, Retreat, Straf
 HeavySlam, SuperAttack, RangedShot, AoeBurst. Every decision masks what `BossBody.CanPerform` says no to. None is never
 masked, so there is always a legal choice.
 
-## Observations (v0, 46 floats, all scaled to about -1..1)
+## Observations (v2, 55 floats, all scaled to about -1..1)
 
 | Group | Values |
 |---|---|
 | Boss (27) | health, state one-hot (4), current attack one-hot (6), attack phase one-hot (4), progress through the phase, cooldown left per attack, shared gap included (5), stun left, locomotion one-hot (5) |
 | Opponent position (7) | distance, direction to it in the boss's frame (2), its facing in the boss's frame (2), its velocity in the boss's frame (2) |
 | Opponent state (9) | health, stamina, attack phase one-hot (4), progress through the phase, damage of its current attack, invulnerable (rolling) |
+| Opponent habits (6) | seconds since its last roll, light attack and heavy attack (3), the usual gap between uses of each (3). Both out of 20 s |
+| Boss's shot (3) | one in flight, its distance to the opponent, whether it is heading at them (1 straight at, -1 straight away) |
 | Arena (3) | boss position from the arena center, sideways and along the line to the opponent (2), round time left |
 
-T10's full list replaces this in Phase 3. Changing the observations means retraining from scratch.
+**Reaction time.** Everything about the opponent (its position, state and habits) is what it was 0.15 s ago, so the
+boss reacts like a person instead of on the frame a button is pressed. `reaction_delay` in `config/boss.yaml` changes
+it for a run, up to 0.5 s, without changing the observation size.
+
+v2 takes three things from T10's input list (Richard's "Boss Model Inputs" doc): the reaction delay, the opponent's
+habits and the boss's shot. It keeps relative positions rather than world positions (the same situation looks the
+same anywhere in the arena, as in Unity's examples), leaves out squared inputs (the network learns curves by itself)
+and keeps round time and stamina. The usual gap follows the doc: it grows like the time since last use and is divided
+by 3 on every use, so something done every T seconds settles between T/2 and 1.5 T.
+
+Changing the observations means retraining from scratch. `Boss_v0` and `Boss_v1` were trained on the old 46-input
+set and cannot run on this agent.
 
 ## Rewards
 

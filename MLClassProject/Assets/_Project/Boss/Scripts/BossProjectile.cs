@@ -18,6 +18,9 @@ namespace BossFight.Boss
         float rangeLeft;
         bool launched;
 
+        /// <summary>The way the shot is flying, as a unit vector.</summary>
+        public Vector3 Direction => direction;
+
         void Awake() => hitbox = GetComponent<Hitbox>();
 
         public void Launch(BossMoveData move, GameObject attacker, Vector3 dir, float metersPerSecond, float range)

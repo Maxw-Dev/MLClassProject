@@ -35,6 +35,7 @@ health.GrantInvulnerability(0.4f);       // call at the start of a roll
 health.IncomingDamageMultiplier = 2f;    // while exposed (the boss's stun); ResetToFull puts it back to 1
 health.Damaged += info => { };           // a hit landed
 health.Dodged += info => { };            // a hit was ignored by i-frames
+health.InvulnerabilityGranted += seconds => { };   // an i-frame window opened (a roll started)
 health.Died += () => { };
 health.IsDead; health.Normalized;        // for HUD and observations
 

@@ -32,11 +32,16 @@ namespace BossFight.Combat
         /// <summary>A hit was ignored because of i-frames (a roll).</summary>
         public event Action<DamageInfo> Dodged;
         public event Action Died;
+        /// <summary>An i-frame window just opened (the start of a roll). Carries its length in seconds.</summary>
+        public event Action<float> InvulnerabilityGranted;
 
         void Awake() => pool ??= new HealthPool(max);
 
-        public void GrantInvulnerability(float seconds) =>
+        public void GrantInvulnerability(float seconds)
+        {
             invulnerableUntil = Mathf.Max(invulnerableUntil, Time.time + seconds);
+            InvulnerabilityGranted?.Invoke(seconds);
+        }
 
         public void ResetToFull()
         {
