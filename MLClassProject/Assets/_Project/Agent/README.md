@@ -13,16 +13,17 @@ time out lives in Boss; this folder only decides.
 - `Prefabs/TrainingArena.prefab`: ArenaContainer variant. The BossAgent is fighter 2 and the PlayerBot (T12) is
   fighter 1, wired to each other rather than found by tag, so many arenas can run side by side. 8 m apart,
   60 s rounds, Auto Restart off (the agent starts every fight).
-- `Scenes/Agent_Boss.unity`: one training arena where the trained boss (Inference Only, `Models/Boss_v1.onnx`)
+- `Scenes/Agent_Boss.unity`: one training arena where the trained boss (Inference Only, `Models/Boss_v2.onnx`)
   fights the PlayerBot, to watch how a model plays. Set its Behavior Type to Heuristic Only to steer the boss yourself.
   `Scripts/BossAgentHud.cs` is the overlay.
 - `Scenes/Agent_Train.unity`: eight training arenas, 80 m apart so a boss shot (20 m) never reaches the next one.
   This is the scene the training build profiles build. `Scripts/TrainingLogFilter.cs` hides info-level logs there.
 - `Scenes/Agent_Play.unity`: you play the player (keyboard) against a trained boss. The boss runs a model from
   `Models/` with Behavior Type Inference Only.
-- `Models/`: trained boss models copied in from `results/`. `Boss_v1.onnx` is the one `Agent_Play` and `Agent_Boss`
-  use. `Boss_v0_609k.onnx` is the first run, kept as a baseline. Retrain after changing move timings in `Boss/Data`:
-  a model only knows the timings it trained on.
+- `Models/`: trained boss models copied in from `results/`. `Boss_v2.onnx` is the one `Agent_Play`, `Agent_Boss` and
+  `Arena/Scenes/Arena2.unity` use. `Boss_v0_609k.onnx` and `Boss_v1.onnx` are earlier runs on the old 46 inputs, kept
+  for the record: they cannot run on the current agent. Retrain after changing move timings in `Boss/Data` or the
+  observations: a model only knows what it trained on.
 - `config/boss.yaml` (repo root): the PPO settings.
 - `Scenes/Agent_Smoke.unity`, `Scripts/SmokeAgent.cs`: the pipeline smoke test from T1. Not part of the game.
 
@@ -126,9 +127,12 @@ reward so far.
 |---|---|---|---|
 | `boss_v0` | first-pass frame data, 609k steps | 75% to 100% | 10.6 s |
 | `boss_v1` | slower windups and cooldowns, 1 s attack gap, double player damage, 2M steps | 79% to 100% | 16.0 s |
+| `boss_v2` | v2 observations (0.15 s reaction delay, player habits, boss shot), bot deciding every physics step, 2M steps | 2% to 100% | 29.4 s |
 
-Both runs beat the default bot almost every time within 200k steps, so the bot is now the limit on what the boss can
-learn. A harder or varied bot (T12) is the next big improvement.
+boss_v0 and boss_v1 beat the default bot almost every time within 200k steps: that bot only decided about 3 times
+per game second at training speed. Once it decided every physics step (T12) it became a real opponent. boss_v2 started
+out losing or drawing almost every fight, passed 50% wins at 340k steps and 99% at 1.1M, and its fights stay about
+twice as long as v1's. Rates are averages over the first and last 100k steps.
 
 ## Playing against a trained boss
 
