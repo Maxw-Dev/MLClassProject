@@ -16,6 +16,7 @@ Game code lives in `MLClassProject/Assets/_Project/`. One folder per ticket, one
 | `_Project/Input` | `BossFight.Input` | Core, Input System, Cinemachine | T7 · Glove |
 | `tools/`, `config/` (repo root) | Python, no assembly | — | T8 · Training tooling |
 | `_Project/Telemetry` | `BossFight.Telemetry` | Core | T9 · Episode logging |
+| `_Project/ImitationBot` | `BossFight.ImitationBot` | Core, Combat, Boss, Arena, ML-Agents | T18 · Imitation bot |
 
 - **Combat** is documented in `MLClassProject/Assets/_Project/Combat/README.md`: how to put health, stamina, hurtboxes, hitboxes, and attacks on a body.
 - **Core** holds the few things everyone shares: `Intent` + `IIntentSource` (controller → body contract; human input, bot, and ML agent all produce an `Intent`, either body consumes it), `IDamageable`, `DamageInfo`, `AttackData`, `BossMove`, `FightEvents`. Change it by PR and tag the people it affects.

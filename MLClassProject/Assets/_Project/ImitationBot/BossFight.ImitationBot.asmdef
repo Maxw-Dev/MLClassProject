@@ -1,0 +1,20 @@
+{
+    "name": "BossFight.ImitationBot",
+    "rootNamespace": "BossFight.ImitationBot",
+    "references": [
+        "BossFight.Core",
+        "BossFight.Combat",
+        "BossFight.Boss",
+        "BossFight.Arena",
+        "Unity.ML-Agents"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
