@@ -12,7 +12,7 @@ Game code lives in `MLClassProject/Assets/_Project/`. One folder per ticket, one
 | `_Project/Player` | `BossFight.Player` | Core, Combat | T3 |
 | `_Project/Boss` | `BossFight.Boss` | Core, Combat | T4 |
 | `_Project/Arena` | `BossFight.Arena` | Core, Combat | T5 |
-| `_Project/Agent` | `BossFight.Agent` | Core, Combat, Boss, ML-Agents | T6 · Max |
+| `_Project/Agent` | `BossFight.Agent` | Core, Combat, Boss, Arena, Player, ML-Agents | T6 · Max |
 | `_Project/Input` | `BossFight.Input` | Core, Input System, Cinemachine | T7 · Glove |
 | `tools/`, `config/` (repo root) | Python, no assembly | — | T8 · Training tooling |
 | `_Project/Telemetry` | `BossFight.Telemetry` | Core | T9 · Episode logging |
@@ -95,6 +95,8 @@ uv run mlagents-learn <path/to/config.yaml> --run-id=<run_name>
 ```
 
 Then press Play in the Unity Editor. Training output lands in `results/` (git-ignored).
+
+Boss training (T6): `config/boss.yaml`, with the scenes and how to read the results in `MLClassProject/Assets/_Project/Agent/README.md`.
 
 If you prefer an activated shell instead of `uv run`: `source .venv/bin/activate` (macOS/Linux) or `.venv\Scripts\activate` (Windows).
 

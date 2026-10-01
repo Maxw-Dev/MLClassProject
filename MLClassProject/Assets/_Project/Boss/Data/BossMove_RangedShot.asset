@@ -13,14 +13,14 @@ MonoBehaviour:
   m_Name: BossMove_RangedShot
   m_EditorClassIdentifier: BossFight.Boss::BossFight.Boss.BossMoveData
   DisplayName: Ranged Shot
-  WindupSeconds: 0.6
+  WindupSeconds: 0.9
   ActiveSeconds: 0.1
-  RecoverySeconds: 0.5
+  RecoverySeconds: 0.8
   Damage: 12
   StaminaCost: 0
   Range: 20
   Move: 8
-  CooldownSeconds: 4
+  CooldownSeconds: 6
   HitOffset: {x: 0, y: 0, z: 0}
   HitRadius: 0.5
   WindupHitStunSeconds: 0

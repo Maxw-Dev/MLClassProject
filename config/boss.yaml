@@ -1,0 +1,41 @@
+# PPO settings for the boss (T6). How to train and read the results: MLClassProject/Assets/_Project/Agent/README.md
+# The boss decides every 0.1 s and a round lasts up to 60 s (600 decisions), so gamma and time_horizon look further
+# ahead than the defaults.
+behaviors:
+  Boss:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 256
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: false      # BossAgent already scales every observation to about -1..1
+      hidden_units: 256
+      num_layers: 2
+    reward_signals:
+      extrinsic:
+        gamma: 0.995
+        strength: 1.0
+    time_horizon: 512
+    max_steps: 2000000
+    keep_checkpoints: 5
+    checkpoint_interval: 200000
+    summary_freq: 20000
+
+# Reward weights. To try other values for one run (no new build needed), uncomment the environment_parameters: line
+# plus the values you want to change. environment_parameters: stays at the left edge, like behaviors:, and each value
+# has two spaces in front. Easiest: select this block and press Cmd+/ (Ctrl+/ on Windows). Lines left commented keep
+# the value set on the BossAgent prefab.
+# environment_parameters:
+#   win_reward: 1.0
+#   win_time_decay: 0.5
+#   loss_penalty: 1.0
+#   draw_penalty: 0.5
+#   damage_dealt_reward: 0.5
+#   damage_taken_penalty: 0.5
+#   time_penalty_per_second: 0.0

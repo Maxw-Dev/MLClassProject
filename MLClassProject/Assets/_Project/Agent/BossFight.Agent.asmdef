@@ -5,6 +5,8 @@
         "BossFight.Core",
         "BossFight.Combat",
         "BossFight.Boss",
+        "BossFight.Arena",
+        "BossFight.Player",
         "Unity.ML-Agents"
     ],
     "includePlatforms": [],
