@@ -278,10 +278,10 @@ namespace BossFight.RL
             if (keyboard != null && heldAttack == BossMove.None) heldAttack = RequestedAttack(keyboard.GetIntent());
         }
 
-        void OnFightEnded(GameObject winner)
+        void OnFightEnded(GameObject boss, GameObject player, bool bossWon, float duration)
         {
-            bool bossWon = winner == gameObject;
-            bool timedOut = winner == null;
+            // The arena only says whether the boss won. If it didn't and is still standing, time ran out.
+            bool timedOut = !bossWon && !health.IsDead;
             // A win is worth less the longer it took (Unity's Soccer example does the same), a loss always costs the same,
             // and a draw sits in between: every win beats every draw, every draw beats every loss.
             float roundUsed = arena != null ? Mathf.Clamp01(1f - arena.TimeRemaining / roundLength) : 0f;
