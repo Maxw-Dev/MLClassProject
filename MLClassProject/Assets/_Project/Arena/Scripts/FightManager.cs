@@ -260,12 +260,12 @@ namespace BossFight.Arena
             if (player == fighter1)
             {
                 SetText(playerHPText, $"HP: {health1.Current}/{health1.Max}");
-                SetText(bossHPText, $"BOSS: {health2.Current}/{health2.Max}");
+                SetText(bossHPText, $"{boss.name}: {health2.Current}/{health2.Max}");
             }
             else
             {
                 SetText(playerHPText, $"HP: {health2.Current}/{health2.Max}");
-                SetText(bossHPText, $"BOSS: {health1.Current}/{health1.Max}");
+                SetText(bossHPText, $"{boss.name}: {health1.Current}/{health1.Max}");
             }
 
         }
