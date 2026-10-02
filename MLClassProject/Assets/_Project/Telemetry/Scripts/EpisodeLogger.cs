@@ -26,6 +26,22 @@ namespace BossFight.telemetryLogger
             {
                 Debug.LogError("No fight manager provided");
             }
+            string fileName = logName + ".csv";
+            string path = Application.persistentDataPath + "/Episode Logs/";
+            string filePath = path + fileName;
+            if (File.Exists(filePath))
+            {
+                int copyNum = 1;
+                string newName = path + logName + "_";
+                while (File.Exists(newName + copyNum + ".csv") && copyNum < 100)
+                {
+                    Debug.Log(copyNum);
+                    copyNum++;
+                }
+                newName += copyNum + ".csv";
+                Debug.Log("File " + logName + " already exists; creating new log with name " + newName);
+                logName += "_" + copyNum;
+            }
             m_fightManager.FightEnded += LogEpisode;
         }
 
@@ -62,7 +78,6 @@ namespace BossFight.telemetryLogger
             string fileName = logName + ".csv";
             string filePath = path + fileName;
             string newLogDetails = String.Format("{0},{1},{2},{3},{4},{5}\n", policyVer, bossWon, roundDuration, damageDealt, damageTaken, playerName);
-
             if (!File.Exists(filePath))
             {
                 // Format of CSV

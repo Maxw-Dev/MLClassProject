@@ -4,6 +4,7 @@ import sys
 from pathlib import Path
 import pandas as pd # type: ignore
 import matplotlib.pyplot as mp # type: ignore
+from os import listdir
 
 filepath = ""
 if (sys.platform == "win32"):
@@ -15,7 +16,12 @@ else:
 fileDir = fileDir / "DefaultCompany" / "MLClassProject" / "Episode Logs"
 fileName = "log.csv"
 filePath = fileDir / fileName
-print("Enter A log name (e.g. log.csv), full log path, or use the default path:\n" + str(filePath))
+print("Enter A log name (e.g. log.csv), full log path, or use the default path:\n(" 
+    + str(filePath) 
+    + ")\n" + "The following logs currently exist:")
+for file in listdir(fileDir):
+    print(file, end = " ")
+print()
 usrInput = input()
 if usrInput != "":
     if (usrInput.find("/") != -1 or usrInput.find("\\") != -1):
