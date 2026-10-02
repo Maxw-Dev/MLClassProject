@@ -45,6 +45,8 @@ namespace BossFight.Arena
         [SerializeField] private Text roundText;
         [SerializeField] private Text score1Text;
         [SerializeField] private Text score2Text;
+        [SerializeField] private Text playerHPText;
+        [SerializeField] private Text bossHPText;
 
         public bool IsFightActive { get; private set; }
         public bool bossWon { get; private set; }
@@ -132,7 +134,12 @@ namespace BossFight.Arena
 
         void Update()
         {
-            if (IsFightActive) UpdateTimerText();
+            if (IsFightActive)
+            {
+                UpdateTimerText();
+                UpdateHPText();
+            }
+            
         }
 
         /// <summary>
@@ -208,7 +215,7 @@ namespace BossFight.Arena
             SetText(timerText, "");
             if (winner != null)
             {
-                SetText(winText, $"{winner.name} WINS!");
+                SetText(winText, $"{winner.name} WON!");
                 StartCoroutine(ShowBanner(winText, winTextDuration));
             }
             else
@@ -244,8 +251,23 @@ namespace BossFight.Arena
 
         void UpdateScoreBoard()
         {
-            SetText(score1Text, $"{fighter1.name} - {Score1}");
-            SetText(score2Text, $"{fighter2.name} - {Score2}");
+            SetText(score1Text, $"{fighter1.name}: {Score1}");
+            SetText(score2Text, $"{fighter2.name}: {Score2}");
+        }
+
+        void UpdateHPText()
+        {
+            if (player == fighter1)
+            {
+                SetText(playerHPText, $"HP: {health1.Current}/{health1.Max}");
+                SetText(bossHPText, $"{boss.name}: {health2.Current}/{health2.Max}");
+            }
+            else
+            {
+                SetText(playerHPText, $"HP: {health2.Current}/{health2.Max}");
+                SetText(bossHPText, $"{boss.name}: {health1.Current}/{health1.Max}");
+            }
+
         }
 
         static void Show(Text text, bool on)
