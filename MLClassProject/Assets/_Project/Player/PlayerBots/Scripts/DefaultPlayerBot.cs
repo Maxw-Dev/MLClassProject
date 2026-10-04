@@ -32,7 +32,7 @@ namespace BossFight.Player.Bots
         [SerializeField] protected float m_attack_distance = 2f;
 
         [Tooltip("A reference to the Boss in the scene, used for making decisions. PlayerBots automatically fill in this field by looking for a Transform with tag 'Boss'")]
-        [SerializeField] Transform boss_transform;
+        [SerializeField] protected Transform boss_transform;
         protected BossBody boss_body;
 
         protected void Start()
