@@ -35,7 +35,7 @@ namespace BossFight.Player.Bots
         [SerializeField] protected Transform boss_transform;
         protected BossBody boss_body;
 
-        protected void Start()
+        protected virtual void Start()
         {
             FindBoss();
         }
@@ -193,6 +193,30 @@ namespace BossFight.Player.Bots
             toBoss.y = 0f;
             float distance = toBoss.magnitude;
             return distance;
+        }
+
+        /// <summary>
+        /// Shoots raycast forward and returns whether there was a hit.
+        /// </summary>
+        /// <param name="raycastRange"></param>
+        /// <returns>True/False whehter something was hit</returns>
+        protected bool ShootRaycast(float raycastRange = 5f)
+        {
+            Vector3 origin = transform.position;
+            Vector3 direction = transform.forward;
+
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(origin, direction, out hitInfo, raycastRange))
+            {
+                //Debug.Log("Hit object: " + hitInfo.transform.name);
+                //Debug.DrawLine(origin, hitInfo.point, Color.red, 1.0f);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         #endregion
 

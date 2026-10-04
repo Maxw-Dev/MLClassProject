@@ -3,13 +3,15 @@ using BossFight.Combat;
 using BossFight.Core;
 using UnityEngine;
 
+//Author: Andre Mata Assis
+
 namespace BossFight.Player.Bots
 {
     /// <summary>
     /// This PlayerBot acts the same as DefaultPlayerBot, with the only difference being the IfBossAttacking behavior:
     /// AggressivePlayerBot will always dodge towards the boss, but at a 45 degree angle. He is always charging towards the boss,
     /// with the only exception being when the boss quick attacks, which causes the bot to dodge away.
-    /// This leaves the bot susceptible to AOE moves and well-timed quick attacks, and even projectiles because he's always so close to the boss.
+    /// This leaves the bot susceptible to AOE moves and well-timed quick attacks, and even projectiles because he's always too close to dodge.
     /// With that said, if the Boss doesn't play correctly, the bot quickly wins due to his aggressive playstyle.
     /// </summary>
     public class AggressivePlayerBot : DefaultPlayerBot
