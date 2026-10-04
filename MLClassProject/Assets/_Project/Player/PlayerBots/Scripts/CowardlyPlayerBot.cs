@@ -67,7 +67,14 @@ namespace BossFight.Player.Bots
             {
                 //Try to punish super attacks
                 case BossMove.SuperAttack:
-                    RunAtAndAttack();
+                    if (boss_attack_phase == AttackPhase.Windup)
+                    {
+                        RunAtAndAttack();
+                    }
+                    else
+                    {
+                        m_queuedMove = -1 * toBoss;
+                    }
                     break;
                 //Otherwise, always dodge away strategically
                 default:
