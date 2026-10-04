@@ -11,7 +11,7 @@ namespace BossFight.Player
     public class PlayerBody : MonoBehaviour
     {
         private CharacterController m_controller;
-        private Animator m_animator;
+        [SerializeField] private Animator m_animator;
         private AttackRunner m_runner;
         private Health health;
 
@@ -70,7 +70,6 @@ namespace BossFight.Player
             m_controller = GetComponent<CharacterController>();
             m_runner = GetComponent<AttackRunner>();
             m_intentSource = GetComponent<IIntentSource>();
-            m_animator = GetComponent<Animator>();
         }
 
         /// <summary>
@@ -235,8 +234,6 @@ namespace BossFight.Player
 
             m_cooldownTimer = m_lightAttackDuration;
             m_animator.SetTrigger("Light");
-
-            Debug.Log("Light Attack Triggered");
         }
 
         /// <summary>
