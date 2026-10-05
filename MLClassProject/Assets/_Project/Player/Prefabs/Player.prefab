@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3765468294292571635}
+  - component: {fileID: 9206822179568122582}
   - component: {fileID: 2080835632176670543}
   - component: {fileID: 1528901363171336803}
   - component: {fileID: 7551833424294181401}
   - component: {fileID: 274585365036550650}
-  - component: {fileID: 9206822179568122582}
   - component: {fileID: 7256304746702626110}
   - component: {fileID: 4815775500284042138}
   - component: {fileID: 1081349475679593737}
@@ -43,6 +43,19 @@ Transform:
   - {fileID: 1807257834839051769}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9206822179568122582
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 009a616be6f3c4ee1896a9081f903024, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Health
+  max: 100
 --- !u!114 &2080835632176670543
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -130,19 +143,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &9206822179568122582
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 144420417029676910}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 009a616be6f3c4ee1896a9081f903024, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: BossFight.Combat::BossFight.Combat.Health
-  max: 100
 --- !u!114 &7256304746702626110
 MonoBehaviour:
   m_ObjectHideFlags: 0
