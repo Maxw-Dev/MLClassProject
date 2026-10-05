@@ -31495,7 +31495,6 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1787363910}
   - {fileID: 594375593}
   - {fileID: 1944229403}
   - {fileID: 47352778}
@@ -32290,6 +32289,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4df63dee3ff5446aab0b9b3816ac8d1a, type: 3}
+--- !u!4 &766492765 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6626860824384093630, guid: 4df63dee3ff5446aab0b9b3816ac8d1a, type: 3}
+  m_PrefabInstance: {fileID: 766492764}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &766492766 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5275139752563691884, guid: 4df63dee3ff5446aab0b9b3816ac8d1a, type: 3}
@@ -53970,12 +53974,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2eb43772d86d1d46a2503a19c7fade3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: BossFight.Arena::BossFight.Arena.CameraFollow
-  target: {fileID: 1207565586}
+  boss: {fileID: 766492765}
+  player: {fileID: 1207565586}
   distance: 6
-  mouseSensitivity: 15
-  smoothSpeed: 5
-  minY: 0
-  maxY: 40
+  height: 2
+  minDistanceFromBoss: 2
+  positionSmoothSpeed: 8
+  rotationSmoothSpeed: 10
+  bossLookAtHeight: 1.5
 --- !u!114 &1301237784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -75234,68 +75240,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3622dd9f751ee6344ad00e9857fa807a, type: 3}
   m_PrefabInstance: {fileID: 1785425595}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &1787363909
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 755425559}
-    m_Modifications:
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 20.55
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 20.05
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 919132149155446097, guid: dc7945349972b450baf42d155e88c992, type: 3}
-      propertyPath: m_Name
-      value: PastelKnight_Lanky
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: dc7945349972b450baf42d155e88c992, type: 3}
---- !u!4 &1787363910 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dc7945349972b450baf42d155e88c992, type: 3}
-  m_PrefabInstance: {fileID: 1787363909}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1788127363
 PrefabInstance:
