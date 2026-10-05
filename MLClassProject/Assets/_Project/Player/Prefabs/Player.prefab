@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 1081349475679593737}
   - component: {fileID: 7703223948351433254}
   - component: {fileID: 7098372467987553718}
+  - component: {fileID: -3588561089514187280}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -232,6 +233,19 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-3588561089514187280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 144420417029676910}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d822f33370996124899cfcc6984d6295, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.PlayerInfo
+  m_behaviorSource: Unspecified
 --- !u!1 &260730848749532102
 GameObject:
   m_ObjectHideFlags: 0

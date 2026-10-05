@@ -698,6 +698,10 @@ PrefabInstance:
       propertyPath: fightStartText
       value: 
       objectReference: {fileID: 1564584359}
+    - target: {fileID: 7422050905710509357, guid: 3399980a36f73d64a803071076db6544, type: 3}
+      propertyPath: m_behaviorSource
+      value: Richard
+      objectReference: {fileID: 0}
     - target: {fileID: 8436161104669511229, guid: 3399980a36f73d64a803071076db6544, type: 3}
       propertyPath: m_behaviorSource
       value: Richard
@@ -788,7 +792,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
   m_fightManager: {fileID: 562533958}
-  logName: logtest2
+  parallelArenas: 8
+  logName: log
   logFrequency: 1
 --- !u!4 &785489747
 Transform:

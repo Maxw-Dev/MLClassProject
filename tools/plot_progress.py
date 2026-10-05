@@ -35,7 +35,7 @@ data = []
 with open(filePath, "r") as f:
     csv = csv.DictReader(f)
     for row in csv:
-        data.append([(row['Policy Version']), float(row["Fight Duration (s)"]), float(row["Damage Dealt"])])
+        data.append([(row['Iteration Num']), float(row["Fight Duration (s)"]), float(row["Damage Dealt"])])
 
 df = pd.DataFrame(data, columns=["Model Iteration", "Fight Duration (s)", "Damage Dealt"])
 
