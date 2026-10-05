@@ -39,7 +39,7 @@ namespace BossFight.Input
         /// Reads and caches the inputed movement value
         /// contextualizes raw input into world space
         /// </summary>
-        private void LateUpdate() {
+        private void FixedUpdate() {
             // compiles intent
             m_intent = new Intent {
                 Move = m_queuedMove,

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 144420417029676910, guid: 1df663d0b7b5b1a498141a3092451cef, type: 3}
       propertyPath: m_Name
-      value: PlayerBot
+      value: DefaultPB
       objectReference: {fileID: 0}
     - target: {fileID: 3765468294292571635, guid: 1df663d0b7b5b1a498141a3092451cef, type: 3}
       propertyPath: m_LocalPosition.x
