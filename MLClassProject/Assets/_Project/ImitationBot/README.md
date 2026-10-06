@@ -1,10 +1,89 @@
 # ImitationBot
 
-A player bot that plays like a real person (T18). We record ourselves fighting the trained boss, then ML-Agents
-learns from those recordings (behavioral cloning and GAIL), still against the trained boss. The result is one more
-opponent for boss training, and a way to compare how each of us plays.
+A player bot that learns from watching you play (T18). You record yourself fighting the trained boss. ML-Agents
+first copies what you did, then keeps practising against the boss until it wins. Everyone can make their own bot,
+and we can compare them, train the boss against them, and use them in the writeup.
 
-## What is here
+## Make your own bot, step by step
+
+Everything below is done once per person. Replace `yourname` with your name in lowercase, for example `james`.
+
+### 1. Record yourself (about 15 minutes)
+
+1. Open `ImitationBot/Scenes/Imitation_Record.unity`.
+2. Click **Player** in the Hierarchy. In the Inspector, find **Demonstration Recorder** and set:
+   - **Record**: ticked
+   - **Demonstration Name**: `yourname`
+   - **Demonstration Directory**: `../demos/yourname`
+3. Press Play and fight the boss the way you normally play. Losing is fine.
+4. Press Play again to stop. That saves one recording file into `demos/yourname/` at the top of the repo.
+5. Do this a few times until you have about 10 to 15 minutes of fighting. Only fighting counts: the pause between
+   rounds is not recorded.
+6. Untick **Record** when you are done, so later test plays do not add files.
+
+### 2. Make your own training settings
+
+Copy `config/imitation.yaml` (in the repo root) to `config/imitation_yourname.yaml`. In the copy, change both lines
+that say `demo_path:` so they point to your folder:
+
+```yaml
+        demo_path: demos/yourname
+```
+
+### 3. Train your bot (about an hour, or stop early)
+
+1. In a terminal at the repo root, run:
+   ```
+   uv run mlagents-learn config/imitation_yourname.yaml --run-id=yourname_v1
+   ```
+2. When it says it is waiting for Unity, open `ImitationBot/Scenes/Imitation_Train.unity` and press Play. Eight
+   arenas start fighting at high speed. Leave Unity alone while it trains.
+3. To see how it is doing, run this in a second terminal and open the link it prints:
+   ```
+   uv run tensorboard --logdir results
+   ```
+   Look at **Player/WinRate**. Max's bot passed 90% after about 8 minutes of training.
+4. It stops by itself after 2 million steps (about 50 minutes). You can stop earlier with Ctrl+C in the terminal.
+   It saves either way.
+
+Your bot is saved as `results/yourname_v1/Player.onnx`.
+
+### 4. Watch your bot
+
+1. Copy `results/yourname_v1/Player.onnx` into `ImitationBot/Models/` and rename it `Player_yourname.onnx`.
+2. Open `ImitationBot/Scenes/Imitation_Watch.unity`.
+3. Click **PlayerBot (imitation)** in the Hierarchy. In **Behavior Parameters**, drag your file into **Model**.
+4. Press Play. The bot fights the boss, with a short pause between rounds.
+
+Use `Imitation_Watch` for watching. Do not change the players in `Imitation_Train` or `Imitation_Record`, or the
+next training run or recording will not work.
+
+### 5. Share it
+
+Commit your `demos/yourname/` folder, `config/imitation_yourname.yaml` and `ImitationBot/Models/Player_yourname.onnx`.
+
+### If something goes wrong
+
+- **"Previous data from this run ID"**: that run name is used already. Pick a new one (`yourname_v2`) or add
+  `--force` to start it over.
+- **"behavior name Player has not been specified"** or nothing happens: you pressed Play in the wrong scene. Training
+  needs `Imitation_Train`.
+- **An error about the demonstration not matching**: the recording was made before the 1 October change to how
+  walking works. Delete it and record again.
+- **The bot stands still**: in `Imitation_Watch`, check that a model is set and Behavior Type is Inference Only.
+
+## Results so far
+
+| Run | What changed | Bot's win rate vs Boss_v2 | Fight length |
+|---|---|---|---|
+| Max by hand | his 24 recorded fights | 96% | short |
+| `max_v0` | first try, walking as two numbers | about 40% | 45 s |
+| `max_v1` | walking as 9 choices, 0.1 s decisions | about 40% | 41 s |
+| `max_v3` | paid mainly for winning (GAIL 0.01, game reward 1.0) | 99% from 500k steps on | 17 s |
+
+## How it works
+
+### What is here
 
 - `Scripts/PlayerAgent.cs`: the player's side as an ML-Agents Agent. Behavior name `Player`.
   - With Human Input set, a person drives the player as usual and the agent records what they do.
@@ -13,15 +92,19 @@ opponent for boss training, and a way to compare how each of us plays.
     decisions between fights, so recordings only hold fighting.
 - `Scripts/PlayerActions.cs`: how actions become an `Intent` and back. Tested in `Tests/`.
 - `Scripts/DelayLine.cs`: keeps the last half second of boss sightings, for the reaction delay. Tested in `Tests/`.
-- `Scenes/Imitation_Record.unity`: `Agent_Play` (you vs Boss_v2) with the agent and a Demonstration Recorder on the
-  player.
 - `Prefabs/PlayerAgent.prefab`: Player variant for training and playing the bot. The keyboard input is removed and
   Behavior Parameters (`Player`, Behavior Type Default) and `PlayerAgent` are added.
+- `Scenes/Imitation_Record.unity`: `Agent_Play` (you vs Boss_v2) with the agent and a Demonstration Recorder on the
+  player.
 - `Scenes/Imitation_Train.unity`: `Agent_Train`'s eight arenas, each with a PlayerAgent where the PlayerBot was and the
   boss on Inference Only with Boss_v2. The boss starts every fight (Auto Restart off), so only `Player` trains.
-- `config/imitation.yaml` (repo root): a first training config. Recordings go in `demos/` at the repo root.
+- `Scenes/Imitation_Watch.unity`: one arena, a PlayerAgent on Inference Only with Deterministic Inference (always its
+  most likely choice) against Boss_v2, Auto Restart on.
+- `Models/`: trained player bots. `Player_v3.onnx` is `max_v3` (99% against Boss_v2). `Player_v2.onnx` is `max_v1`
+  (about 40%), kept for comparison.
+- `config/imitation.yaml` (repo root) and `demos/` (repo root): the training settings and the recordings.
 
-## What the agent sees (39 floats, all about -1..1)
+### What the agent sees (39 floats, all about -1..1)
 
 Only what a person can see on screen. The boss is seen 0.15 s late (Reaction Delay), like a person's reaction time.
 
@@ -36,7 +119,7 @@ Only what a person can see on screen. The boss is seen 0.15 s late (Reaction Del
 Directions are in the boss's frame: forward is toward the boss, right is to the right of that line. So "circle
 left" means the same thing wherever the fight is.
 
-## Actions
+### Actions
 
 Three choices each decision, all discrete:
 
@@ -57,36 +140,14 @@ during play made it stutter. A choice picks one direction and moves at full spee
 **Changing what the agent sees or does makes every recording useless**, because recordings store exactly these
 numbers. Settle any change before we record.
 
-## Recording yourself
+### Copying versus winning
 
-1. Open `Scenes/Imitation_Record.unity`.
-2. Select Player. On Demonstration Recorder, tick Record and set Demonstration Name to your name. Set Demonstration
-   Directory to `../demos/` plus your name, for example `../demos/max`. The path is relative to the Unity project
-   folder, so this lands in `demos/max/` at the repo root.
-3. Press Play and fight Boss_v2 normally (same controls as Agent_Play). Every press of Play adds one `.demo` file.
-   Stopping Play saves it.
-4. Aim for 10 to 15 minutes per person over a few sessions. Play how you normally would, including losing.
-5. Untick Record before you play just for testing, or delete the extra files.
+Training mixes three signals. Behavioral cloning copies the recordings for the first 150k steps and then fades out.
+After that the game's own reward (`extrinsic`: winning and damage) leads, and GAIL (`gail`) adds a small extra reward
+for playing like the recordings. Keep GAIL small (0.01). At GAIL 0.5 and the game's reward 0.1 (`max_v0`, `max_v1`),
+copying outweighed winning about 1000 to 1 and the bot won about 40%. ML-Agents' docs give the same advice: with
+human recordings, keep GAIL below about 0.1 so the agent goes for the reward instead of copying people's mistakes.
 
-Commit your `demos/<name>/` folder. Recordings made before the walk change (1 October, `max_v0`) no longer load:
-delete them.
-
-## Training (once there are recordings)
-
-From the repo root, then press Play in `Scenes/Imitation_Train.unity`:
-
-```
-uv run mlagents-learn config/imitation.yaml --run-id=player_v0
-```
-
-`demo_path` in the config (both places) picks the recordings: one person's folder trains a bot of that person,
-`demos` trains on everyone. In TensorBoard, `Player/WinRate` and `Player/FightLength` show how it fights the boss, and
-the GAIL reward shows how much it still looks like the recordings. The model lands in `results/<run-id>/Player.onnx`.
-To watch it, put that model on a PlayerAgent with Behavior Type Inference Only and tick Deterministic Inference, so
-it always takes its most likely choice instead of a random draw.
-Put that PlayerAgent back to Behavior Type Default before the next training run, or its arena does not train.
-
-**Copying versus winning.** The config's `gail` strength sets how much the bot is paid to look like the recordings,
-`extrinsic` how much it is paid to win. Keep GAIL small (0.01 now). At GAIL 0.5 and extrinsic 0.1 (`max_v0`, `max_v1`)
-copying outweighed winning about 1000 to 1: the bot won about 40% against Boss_v2, while Max won 23 of the 24
-recorded fights. A person's win rate in their own recordings is the bar to beat.
+A bot that always beats one boss is not the end goal. Any trained model has weak spots, and a boss trained against
+one fixed bot learns to exploit them. Next step: train the boss against these bots, then retrain the bots against
+the new boss, and repeat.
