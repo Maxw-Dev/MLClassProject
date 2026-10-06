@@ -1,0 +1,42 @@
+# Imitation player bot (T18): learns to play like the people in demos/, against the trained boss (Boss_v2, Inference
+# Only). How to record and what the agent sees: MLClassProject/Assets/_Project/ImitationBot/README.md
+# Behavioral cloning copies the recordings for the first `steps` and fades out. After that the game's own reward
+# (winning, damage) leads, and GAIL adds a small nudge toward playing like the recordings. ML-Agents' docs: with human
+# recordings, keep GAIL below about 0.1 so the agent goes for the reward instead of copying people's mistakes.
+# max_v0/max_v1 had GAIL 0.5 and the game's reward 0.1: copying outweighed winning about 1000 to 1, and the bot won
+# about 40% against Boss_v2 while the person it learned from won 96%.
+# demo_path can be one person's folder (demos/max) or all of demos/.
+behaviors:
+  Player:
+    trainer_type: ppo
+    hyperparameters:
+      batch_size: 256
+      buffer_size: 10240
+      learning_rate: 3.0e-4
+      beta: 5.0e-3
+      epsilon: 0.2
+      lambd: 0.95
+      num_epoch: 3
+      learning_rate_schedule: linear
+    network_settings:
+      normalize: false      # PlayerAgent already scales every observation to about -1..1
+      hidden_units: 256
+      num_layers: 2
+    reward_signals:
+      extrinsic:
+        gamma: 0.995
+        strength: 1.0
+      gail:
+        gamma: 0.99
+        strength: 0.01
+        demo_path: demos/james
+        use_actions: true
+    behavioral_cloning:
+      demo_path: demos/james
+      strength: 0.5
+      steps: 150000
+    time_horizon: 512
+    max_steps: 1000000
+    keep_checkpoints: 5
+    checkpoint_interval: 200000
+    summary_freq: 20000
