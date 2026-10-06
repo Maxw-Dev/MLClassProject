@@ -34,14 +34,6 @@ namespace BossFight.Player
         }
         private Action m_currentAction = Action.None;
 
-        /// <summary>
-        /// Gets the current action of the player.
-        /// </summary>
-        /// <returns>The current actio</returns>
-        public Action GetCurrentAction() {
-            return m_currentAction;
-        }
-
         // Base movement speed walking around
         [SerializeField] private float m_speed = 5f;
         [SerializeField] private float m_rotationSpeed = 720f;
@@ -297,6 +289,35 @@ namespace BossFight.Player
             m_currentAction = Action.None;
             m_cooldownTimer = 0f;
             m_bufferedInputs.Clear();
+        }
+
+        #endregion
+
+        #region State Getters
+
+        /// <summary>
+        /// returns current player action state
+        /// </summary>
+        /// <returns>returns enum type of PlayerBody.Action</returns>
+        public PlayerBody.Action GetCurrentAction() {
+            return m_currentAction;
+        }
+
+        /// <summary>
+        /// returns the movement input
+        /// is unit vector is dependent on attached IIntentSource
+        /// </summary>
+        /// <returns>directional input</returns>
+        public Vector3 GetDirectionalInput() {
+            return m_movementInput;
+        }
+
+        /// <summary>
+        /// returns a unity vector of where the player is facing
+        /// </summary>
+        /// <returns>unit Vector3 where facing</returns>
+        public Vector3 GetFacingDirection() {
+            return transform.forward.normalized;
         }
 
         #endregion
