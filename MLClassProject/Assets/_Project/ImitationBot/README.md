@@ -84,3 +84,9 @@ uv run mlagents-learn config/imitation.yaml --run-id=player_v0
 the GAIL reward shows how much it still looks like the recordings. The model lands in `results/<run-id>/Player.onnx`.
 To watch it, put that model on a PlayerAgent with Behavior Type Inference Only and tick Deterministic Inference, so
 it always takes its most likely choice instead of a random draw.
+Put that PlayerAgent back to Behavior Type Default before the next training run, or its arena does not train.
+
+**Copying versus winning.** The config's `gail` strength sets how much the bot is paid to look like the recordings,
+`extrinsic` how much it is paid to win. Keep GAIL small (0.01 now). At GAIL 0.5 and extrinsic 0.1 (`max_v0`, `max_v1`)
+copying outweighed winning about 1000 to 1: the bot won about 40% against Boss_v2, while Max won 23 of the 24
+recorded fights. A person's win rate in their own recordings is the bar to beat.
