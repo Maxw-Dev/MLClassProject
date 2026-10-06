@@ -910,7 +910,7 @@ MonoBehaviour:
   m_fightManager: {fileID: 96130914}
   parallelArenas: 8
   logName: log
-  logFrequency: 10
+  logFrequency: 3
 --- !u!4 &1271419321
 Transform:
   m_ObjectHideFlags: 0

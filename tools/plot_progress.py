@@ -33,11 +33,20 @@ if usrInput != "":
 # data to be plotted
 data = []
 with open(filePath, "r") as f:
+    lastIter = -1
+    parallelIters = 0
     csv = csv.DictReader(f)
     for row in csv:
-        data.append([(row['Iteration Num']), float(row["Fight Duration (s)"]), float(row["Damage Dealt"])])
+        iterNum = row["Iteration Num"]
+        if (iterNum == 0):
+            parallelIters += 1
+        if (lastIter != iterNum):
+            if (parallelIters == 0):
+                parallelIters = 1
+            data.append([(iterNum * parallelIters), float(row["Fight Duration (s)"]), float(row["Damage Dealt"]), float(row["Damage Taken"])])
+            lastIter = iterNum
 
-df = pd.DataFrame(data, columns=["Model Iteration", "Fight Duration (s)", "Damage Dealt"])
+df = pd.DataFrame(data, columns=["Model Iteration", "Fight Duration (s)", "Damage Dealt", "Damage Taken"])
 
 df.plot(x="Model Iteration", y=["Fight Duration (s)", "Damage Dealt"],
         kind="line", figsize=(16, 19))

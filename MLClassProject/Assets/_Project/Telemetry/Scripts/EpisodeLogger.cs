@@ -61,8 +61,8 @@ namespace BossFight.telemetryLogger
         /// </summary>
         /// <param name="winner">The winner of the battle</param>
         public void LogEpisode(GameObject boss, GameObject player, bool bossWon, float roundDuration) {
-            Debug.Log("Player: " + player.name);
-            Debug.Log("Boss: " + boss.name);
+            // Debug.Log("Player: " + player.name);
+            // Debug.Log("Boss: " + boss.name);
             // Debug.Log("Round: " + roundCounter + ", " + roundCounter % logFrequency);
             if (roundCounter % logFrequency != 0)
             {
@@ -75,7 +75,7 @@ namespace BossFight.telemetryLogger
             float damageDealt = playerInfo.GetHealthMax() - playerInfo.GetHealth();
             
 
-            long iterNum = 1 + roundCounter * parallelArenas;
+            long iterNum = roundCounter * parallelArenas;
             string playerName = player.GetComponent<PlayerInfo>().GetBehaviorSource();
             
             string path = Application.persistentDataPath + "/Episode Logs/";
@@ -90,7 +90,7 @@ namespace BossFight.telemetryLogger
                 Debug.Log("File Created: " + filePath);
             }
             File.AppendAllText(filePath, newLogDetails);
-            Debug.Log("Data appended to csv:\n" + newLogDetails);
+            // Debug.Log("Data appended to csv:\n" + newLogDetails);
             roundCounter++;
         }
     }
