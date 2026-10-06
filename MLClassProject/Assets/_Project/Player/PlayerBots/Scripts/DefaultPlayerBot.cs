@@ -32,15 +32,14 @@ namespace BossFight.Player.Bots
         [SerializeField] protected float m_attack_distance = 2f;
 
         [Tooltip("A reference to the Boss in the scene, used for making decisions. PlayerBots automatically fill in this field by looking for a Transform with tag 'Boss'")]
-        [SerializeField] Transform boss_transform;
+        [SerializeField] protected Transform boss_transform;
         protected BossBody boss_body;
 
-        protected void Start()
+        protected virtual void Start()
         {
             FindBoss();
         }
 
-        //REPLACE POSTHASTE!!!! WILL NOT WORK IF THERE ARE MUTLIPLE BOSSES!!!! not my problem tho :)
         /// <summary>
         /// Called on Start() -- Finds the boss reference in the Scene and stores it for future reference.
         /// </summary>
@@ -48,8 +47,16 @@ namespace BossFight.Player.Bots
         {
             if (boss_transform == null)
             {
-                var boss = GameObject.FindWithTag("Boss");
+                GameObject boss = null;
+
+                //If we have a parent, look for boss within parent
+                if (transform.parent != null) boss = GetChildWithTag(transform.parent, "Boss");
+                //Otherwise, look in whole scene
+                else boss = GameObject.FindWithTag("Boss");
+
+                //Check if we found the boss and set the reference
                 if (boss != null) boss_transform = boss.transform;
+                else Debug.LogError($"{name}: not able to find boss via tag 'Boss'");
             }
             if (boss_transform != null) boss_body = boss_transform.GetComponent<BossBody>();
         }
@@ -127,7 +134,14 @@ namespace BossFight.Player.Bots
             {
                 //Try to punish super attacks
                 case BossMove.SuperAttack:
-                    RunAtAndAttack();
+                    if (boss_attack_phase == AttackPhase.Windup)
+                    {
+                        RunAtAndAttack();
+                    }
+                    else
+                    {
+                        m_queuedMove = -1 * toBoss;
+                    }
                     break;
                 //Dodge ranged shots
                 case BossMove.RangedShot:
@@ -147,6 +161,24 @@ namespace BossFight.Player.Bots
         protected virtual void IfBossStunned()
         {
             RunAtAndAttack(true);
+        }
+
+        /// <summary>
+        /// stupid thing I had to add for finding the Boss
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="tag"></param>
+        /// <returns></returns>
+        public GameObject GetChildWithTag(Transform parent, string tag)
+        {
+            foreach (Transform child in parent)
+            {
+                if (child.CompareTag(tag))
+                {
+                    return child.gameObject;
+                }
+            }
+            return null; // Return null if no matching child is found
         }
 
         #region HELPER FUNCTIONS
@@ -193,6 +225,30 @@ namespace BossFight.Player.Bots
             toBoss.y = 0f;
             float distance = toBoss.magnitude;
             return distance;
+        }
+
+        /// <summary>
+        /// Shoots raycast forward and returns whether there was a hit.
+        /// </summary>
+        /// <param name="raycastRange"></param>
+        /// <returns>True/False whehter something was hit</returns>
+        protected bool ShootRaycast(float raycastRange = 5f)
+        {
+            Vector3 origin = transform.position;
+            Vector3 direction = transform.forward;
+
+            RaycastHit hitInfo;
+
+            if (Physics.Raycast(origin, direction, out hitInfo, raycastRange))
+            {
+                //Debug.Log("Hit object: " + hitInfo.transform.name);
+                //Debug.DrawLine(origin, hitInfo.point, Color.red, 1.0f);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         #endregion
 
