@@ -388,7 +388,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 803520635}
   m_SourcePrefab: {fileID: 100100000, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
 --- !u!114 &2031553824 stripped
 MonoBehaviour:
@@ -538,6 +541,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &803520635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 452444105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 825529bcf18de234fa333235e75fb0cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.DefaultPlayerBot
+  m_attack_distance: 2
+  boss_transform: {fileID: 0}
+--- !u!1 &452444105 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 2031553823}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
