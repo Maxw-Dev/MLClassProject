@@ -44,6 +44,8 @@ namespace BossFight.Boss
         [Tooltip("Turn rate during a windup: the boss keeps tracking the player but can be outrun. No turning after that.")]
         [SerializeField, Min(0f)] float windupTurnSpeed = 90f;
 
+        [SerializeField] private Animator animator;
+
         CharacterController controller;
         AttackRunner runner;
         Health health;
@@ -145,11 +147,13 @@ namespace BossFight.Boss
             if (!CanPerform(move)) return false;
             if (move == BossMove.None)
             {
+                animator.SetBool("Moving", false);
                 locomotion = BossMove.None;
                 return true;
             }
             if (BossMoveSet.IsLocomotion(move))
             {
+                animator.SetBool("Moving", true);
                 locomotion = move;
                 return true;
             }
@@ -176,6 +180,8 @@ namespace BossFight.Boss
             locomotion = BossMove.None;
             current = data;
             moveSet.BeginAttack(data.Move);
+
+            animator.SetTrigger("Attack");
 
             bool started;
             if (data.FiresProjectile)
