@@ -173,7 +173,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_behaviorSource
-      value: Default
+      value: Aggressive
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -181,7 +181,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 135351563}
+      addedObject: {fileID: 135351554}
   m_SourcePrefab: {fileID: 100100000, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
 --- !u!114 &96130913 stripped
 MonoBehaviour:
@@ -210,7 +210,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
   m_PrefabInstance: {fileID: 96130912}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &135351563
+--- !u!114 &135351554
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -219,9 +219,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 135351553}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 825529bcf18de234fa333235e75fb0cf, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bc3c6e72d800904bac7a8b75781b390, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.DefaultPlayerBot
+  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.AggressivePlayerBot
   m_attack_distance: 2
   boss_transform: {fileID: 0}
 --- !u!1001 &148778025
@@ -564,6 +564,7 @@ GameObject:
   - component: {fileID: 207451257}
   - component: {fileID: 207451256}
   - component: {fileID: 207451255}
+  - component: {fileID: 207451258}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -638,13 +639,57 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 207451254}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.21643962, y: 0, z: 0, w: 0.976296}
-  m_LocalPosition: {x: 0, y: 13, z: -25}
+  m_LocalRotation: {x: 0.5468328, y: 0, z: 0, w: 0.8372418}
+  m_LocalPosition: {x: 120.4, y: 155.1, z: -42.3}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 66.3, y: 0, z: 0}
+--- !u!114 &207451258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 207451254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a79441f348de89743a2939f4d699eac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.UniversalAdditionalCameraData
+  m_RenderShadows: 1
+  m_RequiresDepthTextureOption: 2
+  m_RequiresOpaqueTextureOption: 2
+  m_CameraType: 0
+  m_Cameras: []
+  m_RendererIndex: -1
+  m_VolumeLayerMask:
+    serializedVersion: 2
+    m_Bits: 1
+  m_VolumeTrigger: {fileID: 0}
+  m_VolumeFrameworkUpdateModeOption: 2
+  m_RenderPostProcessing: 0
+  m_Antialiasing: 0
+  m_AntialiasingQuality: 2
+  m_StopNaN: 0
+  m_Dithering: 0
+  m_ClearDepth: 1
+  m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
+  m_UseScreenCoordOverride: 0
+  m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
+  m_RequiresDepthTexture: 0
+  m_RequiresColorTexture: 0
+  m_TaaSettings:
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &223074708
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,7 +788,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_behaviorSource
-      value: Default
+      value: Aggressive
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -751,14 +796,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 326576062}
+      addedObject: {fileID: 326576053}
   m_SourcePrefab: {fileID: 100100000, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
 --- !u!1 &326576052 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
   m_PrefabInstance: {fileID: 326576051}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &326576062
+--- !u!114 &326576053
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -767,9 +812,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 326576052}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 825529bcf18de234fa333235e75fb0cf, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bc3c6e72d800904bac7a8b75781b390, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.DefaultPlayerBot
+  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.AggressivePlayerBot
   m_attack_distance: 2
   boss_transform: {fileID: 0}
 --- !u!1001 &427506398
@@ -1375,7 +1420,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_behaviorSource
-      value: Coward
+      value: Aggressive
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1383,14 +1428,14 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1514154995}
+      addedObject: {fileID: 1514154986}
   m_SourcePrefab: {fileID: 100100000, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
 --- !u!1 &1514154985 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
   m_PrefabInstance: {fileID: 1514154984}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1514154995
+--- !u!114 &1514154986
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1399,9 +1444,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1514154985}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46160ca30690b7b4fbed048fc9d512c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 4bc3c6e72d800904bac7a8b75781b390, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.CowardlyPlayerBot
+  m_EditorClassIdentifier: BossFight.Player::BossFight.Player.Bots.AggressivePlayerBot
   m_attack_distance: 2
   boss_transform: {fileID: 0}
 --- !u!4 &1601244779 stripped
