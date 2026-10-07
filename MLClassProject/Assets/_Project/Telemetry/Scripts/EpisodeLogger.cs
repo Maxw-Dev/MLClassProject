@@ -30,6 +30,7 @@ namespace BossFight.telemetryLogger
                 Debug.LogError("No fight manager provided");
             }
             string fileName = logName + ".csv";
+            System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/Episode Logs");
             string path = Application.persistentDataPath + "/Episode Logs/";
             string filePath = path + fileName;
             if (File.Exists(filePath))

@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainingArena 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: Default
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -272,6 +276,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainingArena 4
       objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: MaxBot
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -368,8 +376,8 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: d05314a0d866440f1bbd07eb9b3dca80, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: MaxBot
+  m_BehaviorType: 2
+  m_BehaviorName: Player
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -426,6 +434,10 @@ PrefabInstance:
     - target: {fileID: 6062377558809163402, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_Name
       value: TrainingArena 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: MaxBot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -523,8 +535,8 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: d05314a0d866440f1bbd07eb9b3dca80, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: MaxBot
+  m_BehaviorType: 2
+  m_BehaviorName: Player
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -729,6 +741,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainingArena 2
       objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: Default
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -807,6 +823,10 @@ PrefabInstance:
     - target: {fileID: 6062377558809163402, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_Name
       value: TrainingArena 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: JamesBot
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -904,8 +924,8 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: a497bb56e04c73d4da01d4d371129e67, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: JamesBot
+  m_BehaviorType: 2
+  m_BehaviorName: Player
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1090,6 +1110,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainingArena 3
       objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: Aggressive
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1217,6 +1241,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TrainingArena 8
       objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: JamesBot
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1286,8 +1314,8 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 5022602860645237092, guid: a497bb56e04c73d4da01d4d371129e67, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
-  m_BehaviorName: JamesBot
+  m_BehaviorType: 2
+  m_BehaviorName: Player
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1344,6 +1372,10 @@ PrefabInstance:
     - target: {fileID: 6062377558809163402, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: m_Name
       value: TrainingArena 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007043345438905289, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: m_behaviorSource
+      value: Coward
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
