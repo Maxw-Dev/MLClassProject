@@ -22,9 +22,9 @@ MonoBehaviour:
   m_AdditionalPlatformBuildSettings: []
   m_OverrideGlobalSceneList: 1
   m_Scenes:
-  - enabled: 1
-    path: Assets/_Project/Agent/Scenes/Agent_Train.unity
-    guid: b639cdd60716841a289436141fac5653
+  - m_enabled: 1
+    m_path: Assets/_Project/Agent/Scenes/Agent_Train.unity
+    m_guid: b639cdd60716841a289436141fac5653
   m_HasScriptingDefines: 0
   m_ScriptingDefines: []
   m_PlayerSettingsYaml:
