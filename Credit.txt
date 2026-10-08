@@ -1,2 +1,5 @@
 Asset Pack 'Modular Village' by Keith at Fertile Soil Productions: https://fertile-soil-productions.itch.io/modular-village-pack
+
 Asset Pack 'FREE Skybox Extended Shader' by BOXOPHOBIX: https://assetstore.unity.com/packages/vfx/shaders/free-skybox-extended-shader-107400
+
+Asset Pack 'Animated Low Poly Robot Free - Stylized Sci-Fi Character' by Juanpmh: https://assetstore.unity.com/packages/3d/characters/robots/animated-low-poly-robot-free-stylized-sci-fi-character-318201
