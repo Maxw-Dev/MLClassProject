@@ -1,6 +1,9 @@
 # MLClassProject
 Class Project for CS Machine Learning A Term 2026 
 
+## Play Online
+[Play it now on Itch!](https://littlegiant1204.itch.io/boss-fight)
+
 ## Project layout and ownership
 
 Game code lives in `MLClassProject/Assets/_Project/`. One folder per ticket, one assembly per folder, one owner per folder. Work inside your folder; if you need something changed elsewhere, ask its owner.
