@@ -119,6 +119,54 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &62193424
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 62193425}
+  - component: {fileID: 62193426}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &62193425
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62193424}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -162.60847, y: 0.00002, z: -8.277679}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1219709480}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &62193426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62193424}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 1219709481}
+  parallelArenas: 8
+  logName: arena3Log
+  logFrequency: 4
 --- !u!1001 &96130912
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -177,7 +225,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1271419321}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -205,6 +256,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df9254c01691e7e4193cfb6037a4c3ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: BossFight.Arena::BossFight.Arena.FightManager
+--- !u!4 &96130915 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 96130912}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &135351553 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
@@ -282,7 +338,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 670313690}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -441,7 +500,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1173310167}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -734,6 +796,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &242454502
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 242454503}
+  - component: {fileID: 242454504}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &242454503
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242454502}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -82.60848, y: 0.00002, z: -8.277679}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 326576053}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &242454504
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 242454502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 326576054}
+  parallelArenas: 8
+  logName: arena2Log
+  logFrequency: 4
 --- !u!1001 &326576051
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -792,7 +902,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 242454503}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -875,7 +988,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1454278291}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -1103,6 +1219,198 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
+--- !u!1 &670313689
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 670313690}
+  - component: {fileID: 670313691}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &670313690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670313689}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -242.60847, y: 0.00002, z: -8.277679}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1964028344}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &670313691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 670313689}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 148778027}
+  parallelArenas: 8
+  logName: arena4Log
+  logFrequency: 4
+--- !u!1 &889368767
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 889368768}
+  - component: {fileID: 889368769}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &889368768
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889368767}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -82.60848, y: 0.00002, z: -88.27768}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1514154986}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &889368769
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 889368767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 1514154987}
+  parallelArenas: 8
+  logName: arena6Log
+  logFrequency: 4
+--- !u!1 &1173310166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1173310167}
+  - component: {fileID: 1173310168}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1173310167
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173310166}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.60848, y: 0.00002, z: -88.27768}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2048076683}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1173310168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1173310166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 160622105}
+  parallelArenas: 8
+  logName: arena5Log
+  logFrequency: 4
+--- !u!1 &1191489461
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1191489462}
+  - component: {fileID: 1191489463}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1191489462
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191489461}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -242.60847, y: 0.00002, z: -88.27768}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1341773454}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1191489463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1191489461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 190728884}
+  parallelArenas: 8
+  logName: arena8Log
+  logFrequency: 4
 --- !u!1001 &1219709478
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1161,7 +1469,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 62193425}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -1172,6 +1483,22 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
   m_PrefabInstance: {fileID: 1219709478}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &1219709480 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 1219709478}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1219709481 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7371771174474597962, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 1219709478}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: df9254c01691e7e4193cfb6037a4c3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.Arena::BossFight.Arena.FightManager
 --- !u!114 &1219709489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1217,8 +1544,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
   m_fightManager: {fileID: 96130914}
   parallelArenas: 8
-  logName: log
-  logFrequency: 3
+  logName: arena1Log
+  logFrequency: 4
 --- !u!4 &1271419321
 Transform:
   m_ObjectHideFlags: 0
@@ -1227,12 +1554,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1271419319}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.00002, z: 0.00006}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.60848, y: 0.00002, z: -8.277679}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 96130915}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1341773450
 PrefabInstance:
@@ -1292,7 +1619,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 1191489462}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -1366,6 +1696,64 @@ MonoBehaviour:
   m_UseChildActuators: 1
   m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
+--- !u!4 &1341773454 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 1341773450}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1454278290
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1454278291}
+  - component: {fileID: 1454278292}
+  m_Layer: 0
+  m_Name: EpisodeLogger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1454278291
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454278290}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -162.60847, y: 0.00002, z: -88.27768}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1512665693}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1454278292
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1454278290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f0632b7c12a03346b9fa7246201150a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BossFight.telemetryLogger::BossFight.telemetryLogger.EpisodeLogger
+  m_fightManager: {fileID: 427506402}
+  parallelArenas: 8
+  logName: arena7Log
+  logFrequency: 4
+--- !u!4 &1512665693 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 427506398}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1514154984
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1424,7 +1812,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      insertIndex: 5
+      addedObject: {fileID: 889368768}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3246479489417304407, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       insertIndex: -1
@@ -1510,6 +1901,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1964028344 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 148778025}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2048076683 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2384817002345146009, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+  m_PrefabInstance: {fileID: 160622103}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -1526,4 +1927,3 @@ SceneRoots:
   - {fileID: 649954735}
   - {fileID: 1947014002}
   - {fileID: 223074710}
-  - {fileID: 1271419321}

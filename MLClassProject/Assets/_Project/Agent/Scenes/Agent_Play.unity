@@ -75992,6 +75992,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 903767146}
     - target: {fileID: 7371771174474597962, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
+      propertyPath: roundTime
+      value: 105
+      objectReference: {fileID: 0}
+    - target: {fileID: 7371771174474597962, guid: a82d76846aa55499dabb2fc0024b1197, type: 3}
       propertyPath: timerText
       value: 
       objectReference: {fileID: 903767143}
